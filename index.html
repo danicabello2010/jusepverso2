@@ -21,6 +21,9 @@
             background-color: #000;
             font-family: var(--font-family);
             -webkit-font-smoothing: antialiased;
+            display: flex;
+            height: 100vh;
+            overflow: hidden;
         }
 
         .sidebar {
@@ -33,6 +36,50 @@
             flex-direction: column;
             gap: 4px;
             position: relative;
+            flex-shrink: 0;
+        }
+
+        /* CONTENEDOR PRINCIPAL DERECHO */
+        .main-content {
+            flex-grow: 1;
+            height: 100vh;
+            background-color: #0d1117;
+            color: var(--text-color);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            box-sizing: border-box;
+        }
+
+        .main-content h1 {
+            margin: 0 0 16px 0;
+            font-size: 36px;
+            font-weight: 600;
+            padding: 0 20px;
+        }
+
+        .main-content p {
+            color: var(--text-muted);
+            font-size: 18px;
+            margin: 0;
+            max-width: 500px;
+            line-height: 1.5;
+            padding: 0 20px;
+        }
+
+        /* IMAGENES ABSOLUTAS: Ocupan todo el espacio disponible de borde a borde */
+        .jusep-image {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            cursor: pointer; /* Cursor de mano para hacer clic */
+            display: none;
         }
 
         .window-controls {
@@ -222,6 +269,16 @@
 </head>
 <body>
 
+    <audio id="bgMusic" src="./Jusep_data/Jusep/Sonidodemonos.mp3" loop></audio>
+    <audio id="bgEsponjaMusic" src="./Jusep_data/Esponja/bsjusu.mp3" loop></audio>
+    <audio id="bgEstrellaMusic" src="./Jusep_data/Estrella/baquehuate.mp3" loop></audio>
+    <audio id="bgMangoMusic" src="./Jusep_data/Jusep/fondo_mango.mp3" loop></audio>
+
+    <audio id="clickSound" src="./Jusep_data/Jusep/Hypercharge.mp3"></audio>
+    <audio id="clickEsponjaSound" src="./Jusep_data/Esponja/sad.mp3"></audio>
+    <audio id="clickEstrellaSound" src="./Jusep_data/Estrella/baquerisa.mp3"></audio>
+    <audio id="clickMangoSound" src="./Jusep_data/Jusep/RUTA_SONIDO_MANGO.mp3"></audio>
+
     <div class="sidebar">
         <div class="window-controls">
             <button class="btn-more">
@@ -253,7 +310,7 @@
             </div>
         </div>
 
-        <a class="nav-item">
+        <a class="nav-item active" data-section="jusep">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
@@ -261,7 +318,7 @@
             <span>Jusep</span>
         </a>
 
-        <a class="nav-item">
+        <a class="nav-item" data-section="jusep-esponja">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
                 <circle cx="9" cy="7" r="4"></circle>
@@ -271,7 +328,7 @@
             <span>Jusep Esponja</span>
         </a>
 
-        <a class="nav-item">
+        <a class="nav-item" data-section="jusep-estrella">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
@@ -279,7 +336,7 @@
             <span>Jusep Estrella</span>
         </a>
 
-        <a class="nav-item">
+        <a class="nav-item" data-section="jusep-mango">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="12 6 12 12 16 14"></polyline>
@@ -292,7 +349,7 @@
             <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
         </div>
 
-        <a class="nav-item active">
+        <a class="nav-item" data-section="jusep-clicker">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="8 12 12 16 16 12"></polyline>
@@ -301,7 +358,7 @@
             <span>Jusep Clicker</span>
         </a>
 
-        <a class="nav-item active">
+        <a class="nav-item" data-section="jusep-rpg">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="10"></circle>
                 <polyline points="8 12 12 16 16 12"></polyline>
@@ -315,12 +372,22 @@
             <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
         </div>
 
-        <a class="nav-item">
+        <a class="nav-item" data-section="primer-lanzamiento">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
             </svg>
             <span>Primer Lanzamiento</span>
         </a>
+    </div>
+
+    <div class="main-content" id="mainContent">
+        <h1 id="contentTitle">Bienvenido al Jusep Verso</h1>
+        <p id="contentDesc">Selecciona una opción del menú de la barra lateral para ver su contenido.</p>
+        
+        <img id="jusepImgElement" class="jusep-image" src="./Jusep_data/Jusep/jusep.jpg" alt="Jusep Original">
+        <img id="jusepEsponjaImg" class="jusep-image" src="./Jusep_data/Esponja/jusuesponja.jpg" alt="Jusep Esponja">
+        <img id="jusepEstrellaImg" class="jusep-image" src="./Jusep_data/Estrella/estrella.jpg" alt="Jusep Estrella">
+        <img id="jusepMangoImg" class="jusep-image" src="./Jusep_data/Mango/mangowp.png" alt="Jusep Mango">
     </div>
 
     <script>
@@ -337,7 +404,139 @@
         const avatarImage = document.getElementById('avatarImage');
         const dropdownStatus = document.getElementById('dropdownStatus');
 
-        // FUNCIÓN INMUNE: El botón circular abrirá el menú sí o sí, sin importar Supabase
+        const contentTitle = document.getElementById('contentTitle');
+        const contentDesc = document.getElementById('contentDesc');
+        
+        // Elementos de Imagen obtenidos del HTML
+        const jusepImgElement = document.getElementById('jusepImgElement');
+        const jusepEsponjaImg = document.getElementById('jusepEsponjaImg');
+        const jusepEstrellaImg = document.getElementById('jusepEstrellaImg');
+        const jusepMangoImg = document.getElementById('jusepMangoImg');
+
+        // Elementos de Música de Fondo
+        const bgMusic = document.getElementById('bgMusic');
+        const bgEsponjaMusic = document.getElementById('bgEsponjaMusic');
+        const bgEstrellaMusic = document.getElementById('bgEstrellaMusic');
+        const bgMangoMusic = document.getElementById('bgMangoMusic');
+
+        // Elementos de Sonido de Clic obtenidos del HTML
+        const clickSound = document.getElementById('clickSound');
+        const clickEsponjaSound = document.getElementById('clickEsponjaSound');
+        const clickEstrellaSound = document.getElementById('clickEstrellaSound');
+        const clickMangoSound = document.getElementById('clickMangoSound');
+        
+        const navItems = document.querySelectorAll('.nav-item');
+
+        const sectionsData = {
+            "jusep": { title: "", desc: "" },
+            "jusep-esponja": { title: "", desc: "" },
+            "jusep-estrella": { title: "", desc: "" },
+            "jusep-mango": { title: "", desc: "" },
+            "jusep-clicker": {
+                title: "🎮 Jusep Clicker",
+                desc: "Sección en desarrollo. Prepárate para reventar el ratón haciendo clics y ganar Jusep-Coins."
+            },
+            "jusep-rpg": {
+                title: "⚔️ Jusep RPG",
+                desc: "Sección en desarrollo. Una aventura medieval fantástica interactiva basada en decisiones."
+            },
+            "primer-lanzamiento": {
+                title: "📰 Primer Lanzamiento",
+                desc: "Notas del parche: Versión 2.0. Se ha implementado el inicio de sesión OAuth2 real integrado con GitHub."
+            }
+        };
+
+        // --- ASIGNACIÓN DE CLICS A CADA IMAGEN CON SU RESPECTIVO AUDIO ---
+        jusepImgElement.addEventListener('click', () => {
+            clickSound.currentTime = 0;
+            clickSound.play().catch(err => console.log("Error audio Jusep:", err));
+        });
+
+        jusepEsponjaImg.addEventListener('click', () => {
+            clickEsponjaSound.currentTime = 0;
+            clickEsponjaSound.play().catch(err => console.log("Error audio Esponja:", err));
+        });
+
+        jusepEstrellaImg.addEventListener('click', () => {
+            clickEstrellaSound.currentTime = 0;
+            clickEstrellaSound.play().catch(err => console.log("Error audio Estrella:", err));
+        });
+
+        jusepMangoImg.addEventListener('click', () => {
+            clickMangoSound.currentTime = 0;
+            clickMangoSound.play().catch(err => console.log("Error audio Mango:", err));
+        });
+
+        // Ocultar todas las imágenes secundarias del main-content de golpe
+        function hideAllImages() {
+            jusepImgElement.style.display = "none";
+            jusepEsponjaImg.style.display = "none";
+            jusepEstrellaImg.style.display = "none";
+            jusepMangoImg.style.display = "none";
+        }
+
+        // Pausar de golpe todos los reproductores de música de fondo para que no se superpongan
+        function pauseAllBackgroundMusic() {
+            bgMusic.pause();
+            bgEsponjaMusic.pause();
+            bgEstrellaMusic.pause();
+            bgMangoMusic.pause();
+        }
+
+        // LÓGICA DE INTERCAMBIO DE SECCIONES
+        navItems.forEach(item => {
+            item.addEventListener('click', () => {
+                navItems.forEach(nav => nav.classList.remove('active'));
+                item.classList.add('active');
+
+                const targetKey = item.getAttribute('data-section');
+                
+                if (sectionsData[targetKey]) {
+                    contentTitle.innerText = sectionsData[targetKey].title;
+                    contentDesc.innerText = sectionsData[targetKey].desc;
+                }
+
+                // Por defecto ocultamos textos e imágenes y paramos toda la música ambiental
+                contentTitle.style.display = "none"; 
+                contentDesc.style.display = "none";  
+                hideAllImages();
+                pauseAllBackgroundMusic();
+
+                // Evaluamos a qué sección se ingresa y activamos su respectiva música
+                if (targetKey === "jusep") {
+                    jusepImgElement.style.display = "block"; 
+                    bgMusic.play().catch(err => console.log("Audio Jusep en espera de interacción.", err));
+                } 
+                else if (targetKey === "jusep-esponja") {
+                    jusepEsponjaImg.style.display = "block";
+                    bgEsponjaMusic.play().catch(err => console.log("Audio Esponja en espera de interacción.", err));
+                } 
+                else if (targetKey === "jusep-estrella") {
+                    jusepEstrellaImg.style.display = "block";
+                    bgEstrellaMusic.play().catch(err => console.log("Audio Estrella en espera de interacción.", err));
+                } 
+                else if (targetKey === "jusep-mango") {
+                    jusepMangoImg.style.display = "block";
+                    bgMangoMusic.play().catch(err => console.log("Audio Mango en espera de interacción.", err));
+                } 
+                else {
+                    // Si es una sección con textos (como Jueguitos o Noticias) volvemos a mostrarlos
+                    contentTitle.style.display = "block"; 
+                    contentDesc.style.display = "block";
+                }
+            });
+        });
+
+        // Configuración de arranque inicial
+        const activeItem = document.querySelector('.nav-item.active');
+        if(activeItem && activeItem.getAttribute('data-section') === 'jusep') {
+            contentTitle.style.display = "none";
+            contentDesc.style.display = "none";
+            hideAllImages();
+            jusepImgElement.style.display = "block";
+        }
+
+        // MENÚ PROFILE
         profileBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             profileDropdown.classList.toggle('show');
@@ -346,7 +545,6 @@
         document.addEventListener('click', () => profileDropdown.classList.remove('show'));
         profileDropdown.addEventListener('click', (e) => e.stopPropagation());
 
-        // Inicializar Supabase de forma segura
         let _supabase = null;
         try {
             if (SUPABASE_URL !== "TU_URL_AQUÍ" && SUPABASE_ANON_KEY !== "TU_CLAVE_ANON_AQUÍ") {
@@ -356,7 +554,6 @@
             console.error("Error al cargar Supabase, revisa tus claves:", err);
         }
 
-        // Lógica de inicio de sesión real
         loginBtn.addEventListener('click', async () => {
             if (!_supabase) {
                 alert("Primero debes poner tus claves de Supabase en el código.");
@@ -373,7 +570,6 @@
             }
         });
 
-        // Cierre de sesión
         logoutBtn.addEventListener('click', async () => {
             if (_supabase) await _supabase.auth.signOut();
             updateUI(null);
@@ -402,7 +598,6 @@
             }
         }
 
-        // Persistencia de sesión
         if (_supabase) {
             _supabase.auth.onAuthStateChange((event, session) => {
                 if (session) updateUI(session.user);
