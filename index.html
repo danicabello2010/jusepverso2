@@ -134,7 +134,7 @@
         .dropdown-info { font-size: 13px; color: var(--text-muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .dropdown-divider { height: 1px; background-color: rgba(255, 255, 255, 0.08); margin: 4px 0; }
 
-        /* SECCIONES INTERNES MENU */
+        /* SECCIONES INTERNAS MENU */
         .redeem-section { display: flex; flex-direction: column; gap: 6px; }
         .redeem-section label, .themes-section span { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
         .redeem-input-group { display: flex; gap: 6px; }
@@ -164,7 +164,6 @@
             display: flex; align-items: center; padding: 10px 12px; border-radius: 10px;
             color: var(--text-color); text-decoration: none; font-size: 15px; gap: 16px; cursor: pointer;
         }
-        .nav-item.locked { display: none !important; }
         .nav-item:hover { background-color: rgba(255, 255, 255, 0.05); }
         .nav-item.active { background-color: var(--active-bg); font-weight: 500; }
 
@@ -236,9 +235,8 @@
         .achievement-card.unlocked-card {
             border-color: rgba(46, 164, 79, 0.4); background-color: rgba(46, 164, 79, 0.05);
         }
-        .ach-icon-wrapper { width: 50px; height: 50px; flex-shrink: 0; filter: grayscale(100%); opacity: 0.4; }
+        .ach-icon-wrapper { width: 50px; height: 50px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 24px; background: rgba(255,255,255,0.05); border-radius: 8px; filter: grayscale(100%); opacity: 0.4; }
         .achievement-card.unlocked-card .ach-icon-wrapper { filter: grayscale(0%); opacity: 1; }
-        .ach-icon-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
         .ach-details { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
         .ach-title { font-size: 15px; font-weight: 600; color: var(--text-color); }
         .ach-desc { font-size: 12px; color: var(--text-muted); }
@@ -344,22 +342,22 @@
             <span>Jusep</span>
         </a>
 
-        <a class="nav-item locked" data-section="jusep-esponja" id="nav-esponja">
+        <a class="nav-item" data-section="jusep-esponja" id="nav-esponja">
             <img class="nav-icon-square" src="./Jusep_data/Esponja/icon.png" alt="Jusep Esponja">
             <span>Jusep Esponja</span>
         </a>
 
-        <a class="nav-item locked" data-section="jusep-estrella" id="nav-estrella">
+        <a class="nav-item" data-section="jusep-estrella" id="nav-estrella">
             <img class="nav-icon-square" src="./Jusep_data/Estrella/icon.png" alt="Jusep Estrella">
             <span>Jusep Estrella</span>
         </a>
 
-        <a class="nav-item locked" data-section="jusep-mango" id="nav-mango">
+        <a class="nav-item" data-section="jusep-mango" id="nav-mango">
             <img class="nav-icon-square" src="./Jusep_data/Mango/mangoicon.png" alt="Jusep Mango">
             <span>Jusep Mango</span>
         </a>
 
-        <a class="nav-item locked" data-section="jusep-nuget" id="nav-nuget">
+        <a class="nav-item" data-section="jusep-nuget" id="nav-nuget">
             <img class="nav-icon-square" src="./Jusep_data/Nuget/icon.png" alt="Jusep Nuget">
             <span>Jusep Nugget</span>
         </a>
@@ -416,7 +414,8 @@
                 </div>
                 <div class="shop-item disabled" id="buy-farm" onclick="buyAsset('farm')">
                     <div class="item-info"><div class="item-name">Granja de Monos</div><div class="item-cost" id="cost-farm">Coste: 1100</div></div>
-                    <div class="item-count" id="count-farm">0</div> </div>
+                    <div class="item-count" id="count-farm">0</div>
+                </div>
                 <div class="shop-item disabled" id="buy-factory" onclick="buyAsset('factory')">
                     <div class="item-info"><div class="item-name">Fábrica BAQUE</div><div class="item-cost" id="cost-factory">Coste: 12000</div></div>
                     <div class="item-count" id="count-factory">0</div>
@@ -429,48 +428,84 @@
             <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;" id="ach-total-clicks-label">Clicks históricos totales: 0</p>
             
             <div class="achievements-grid">
-                <div class="achievement-card unlocked-card" id="card-ach-jusep">
-                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Jusep/icon.png"></div>
+                <div class="achievement-card" id="card-ach-100">
+                    <div class="ach-icon-wrapper">🌱</div>
                     <div class="ach-details">
-                        <div class="ach-title">El Comienzo del Verso</div>
-                        <div class="ach-desc">Desbloquea al Jusep Original base.</div>
-                        <span class="ach-badge badge-unlocked">Desbloqueado 🟢</span>
+                        <div class="ach-title">Primeros Pasos</div>
+                        <div class="ach-desc" id="desc-ach-100">Consigue 100 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-100">Bloqueado 🔒</span>
                     </div>
                 </div>
-
-                <div class="achievement-card" id="card-ach-esponja">
-                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Esponja/icon.png"></div>
+                <div class="achievement-card" id="card-ach-200">
+                    <div class="ach-icon-wrapper">⚙️</div>
                     <div class="ach-details">
-                        <div class="ach-title">Jusep Pantalones Cuadrados</div>
-                        <div class="ach-desc" id="desc-ach-esponja">Consigue 100 clicks para desbloquear.</div>
-                        <span class="ach-badge badge-locked" id="badge-ach-esponja">Bloqueado 🔒</span>
+                        <div class="ach-title">Engranaje Constante</div>
+                        <div class="ach-desc" id="desc-ach-200">Consigue 200 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-200">Bloqueado 🔒</span>
                     </div>
                 </div>
-
-                <div class="achievement-card" id="card-ach-estrella">
-                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Estrella/icon.png"></div>
+                <div class="achievement-card" id="card-ach-300">
+                    <div class="ach-icon-wrapper">⚡</div>
                     <div class="ach-details">
-                        <div class="ach-title">Estrella del Baquehuate</div>
-                        <div class="ach-desc" id="desc-ach-estrella">Consigue 200 clicks para desbloquear.</div>
-                        <span class="ach-badge badge-locked" id="badge-ach-estrella">Bloqueado 🔒</span>
+                        <div class="ach-title">Energía Acumulada</div>
+                        <div class="ach-desc" id="desc-ach-300">Consigue 300 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-300">Bloqueado 🔒</span>
                     </div>
                 </div>
-
-                <div class="achievement-card" id="card-ach-mango">
-                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Mango/mangoicon.png"></div>
+                <div class="achievement-card" id="card-ach-400">
+                    <div class="ach-icon-wrapper">💎</div>
                     <div class="ach-details">
-                        <div class="ach-title">El Dulce Sabor del Éxito</div>
-                        <div class="ach-desc" id="desc-ach-mango">Consigue 300 clicks para desbloquear.</div>
-                        <span class="ach-badge badge-locked" id="badge-ach-mango">Bloqueado 🔒</span>
+                        <div class="ach-title">Estructura Firme</div>
+                        <div class="ach-desc" id="desc-ach-400">Consigue 400 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-400">Bloqueado 🔒</span>
                     </div>
                 </div>
-
-                <div class="achievement-card" id="card-ach-nuget">
-                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Nuget/icon.png"></div>
+                <div class="achievement-card" id="card-ach-500">
+                    <div class="ach-icon-wrapper">🔥</div>
                     <div class="ach-details">
-                        <div class="ach-title">El Crujiente Jusep Legendario</div>
-                        <div class="ach-desc" id="desc-ach-nuget">Consigue 400 clicks para desbloquear.</div>
-                        <span class="ach-badge badge-locked" id="badge-ach-nuget">Bloqueado 🔒</span>
+                        <div class="ach-title">Mitad de Camino</div>
+                        <div class="ach-desc" id="desc-ach-500">Consigue 500 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-500">Bloqueado 🔒</span>
+                    </div>
+                </div>
+                <div class="achievement-card" id="card-ach-600">
+                    <div class="ach-icon-wrapper">📈</div>
+                    <div class="ach-details">
+                        <div class="ach-title">Rendimiento Elevado</div>
+                        <div class="ach-desc" id="desc-ach-600">Consigue 600 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-600">Bloqueado 🔒</span>
+                    </div>
+                </div>
+                <div class="achievement-card" id="card-ach-700">
+                    <div class="ach-icon-wrapper">🔮</div>
+                    <div class="ach-details">
+                        <div class="ach-title">Sinergia Avanzada</div>
+                        <div class="ach-desc" id="desc-ach-700">Consigue 700 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-700">Bloqueado 🔒</span>
+                    </div>
+                </div>
+                <div class="achievement-card" id="card-ach-800">
+                    <div class="ach-icon-wrapper">🚀</div>
+                    <div class="ach-details">
+                        <div class="ach-title">Alta Velocidad</div>
+                        <div class="ach-desc" id="desc-ach-800">Consigue 800 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-800">Bloqueado 🔒</span>
+                    </div>
+                </div>
+                <div class="achievement-card" id="card-ach-900">
+                    <div class="ach-icon-wrapper">💥</div>
+                    <div class="ach-details">
+                        <div class="ach-title">Fuerza Desatada</div>
+                        <div class="ach-desc" id="desc-ach-900">Consigue 900 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-900">Bloqueado 🔒</span>
+                    </div>
+                </div>
+                <div class="achievement-card" id="card-ach-1000">
+                    <div class="ach-icon-wrapper">👑</div>
+                    <div class="ach-details">
+                        <div class="ach-title">Gran Centenar</div>
+                        <div class="ach-desc" id="desc-ach-1000">Consigue 1000 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-1000">Bloqueado 🔒</span>
                     </div>
                 </div>
             </div>
@@ -483,7 +518,6 @@
         const RUTA_TEXTO_BETA = "./cambios.txt";
         const TEXTO_RESPALDO_BETA = "Cambios de la versión 2026.06.16:\n\n- Se ha configurado un sonido independiente exclusivamente para el Jusep Gigante del Clicker.\n- Se habilitó la carga dinámica de notas desde archivos externos.\n- Optimizaciones de estabilidad en la interfaz móvil.";
 
-        const NUGET_PUBLICO = false;
         const SUPABASE_URL = "https://fimkpoqhzwruxhpsavhc.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_TTXdlD8qqhYbBtLdSaWxqA_Ca_Uip7u"; 
 
@@ -552,78 +586,34 @@
             setTimeout(() => { toast.style.display = 'none'; }, 4000);
         }
 
+        function evaluarUnLogro(valorMeta) {
+            const card = document.getElementById(`card-ach-${valorMeta}`);
+            const desc = document.getElementById(`desc-ach-${valorMeta}`);
+            const badge = document.getElementById(`badge-ach-${valorMeta}`);
+            if(!card || !desc || !badge) return;
+
+            if (totalClicksHistoricos >= valorMeta) {
+                if (!card.classList.contains('unlocked-card')) {
+                    card.classList.add('unlocked-card');
+                    showAchievementNotification(`🏆 ¡Logro Desbloqueado! Meta alcanzo los ${valorMeta} clicks`);
+                }
+                desc.innerText = `¡Completado! Alcanzaste los ${valorMeta} clicks históricos.`;
+                badge.className = "ach-badge badge-unlocked";
+                badge.innerText = "Desbloqueado 🟢";
+            } else {
+                card.classList.remove('unlocked-card');
+                desc.innerText = `Progreso: ${totalClicksHistoricos}/${valorMeta} clicks.`;
+                badge.className = "ach-badge badge-locked";
+                badge.innerText = "Bloqueado 🔒";
+            }
+        }
+
         function verificarDesbloqueosYVisibilidad() {
             const label = document.getElementById('ach-total-clicks-label');
             if(label) label.innerText = `Clicks históricos totales: ${totalClicksHistoricos}`;
 
-            if (totalClicksHistoricos >= 100) {
-                if (document.getElementById('nav-esponja').classList.contains('locked')) {
-                    document.getElementById('nav-esponja').classList.remove('locked');
-                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Esponja (100 Clicks)");
-                }
-                document.getElementById('card-ach-esponja').classList.add('unlocked-card');
-                document.getElementById('desc-ach-esponja').innerText = "¡Completado! Jusep Esponja desbloqueado.";
-                document.getElementById('badge-ach-esponja').className = "ach-badge badge-unlocked";
-                document.getElementById('badge-ach-esponja').innerText = "Desbloqueado 🟢";
-            } else { 
-                document.getElementById('nav-esponja').classList.add('locked');
-                document.getElementById('card-ach-esponja').classList.remove('unlocked-card');
-                document.getElementById('desc-ach-esponja').innerText = `Progreso: ${totalClicksHistoricos}/100 clicks.`;
-                document.getElementById('badge-ach-esponja').className = "ach-badge badge-locked";
-                document.getElementById('badge-ach-esponja').innerText = "Bloqueado 🔒";
-            }
-
-            if (totalClicksHistoricos >= 200) {
-                if (document.getElementById('nav-estrella').classList.contains('locked')) {
-                    document.getElementById('nav-estrella').classList.remove('locked');
-                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Estrella (200 Clicks)");
-                }
-                document.getElementById('card-ach-estrella').classList.add('unlocked-card');
-                document.getElementById('desc-ach-estrella').innerText = "¡Completado! Jusep Estrella desbloqueado.";
-                document.getElementById('badge-ach-estrella').className = "ach-badge badge-unlocked";
-                document.getElementById('badge-ach-estrella').innerText = "Desbloqueado 🟢";
-            } else { 
-                document.getElementById('nav-estrella').classList.add('locked');
-                document.getElementById('card-ach-estrella').classList.remove('unlocked-card');
-                document.getElementById('desc-ach-estrella').innerText = `Progreso: ${totalClicksHistoricos}/200 clicks.`;
-                document.getElementById('badge-ach-estrella').className = "ach-badge badge-locked";
-                document.getElementById('badge-ach-estrella').innerText = "Bloqueado 🔒";
-            }
-
-            if (totalClicksHistoricos >= 300) {
-                if (document.getElementById('nav-mango').classList.contains('locked')) {
-                    document.getElementById('nav-mango').classList.remove('locked');
-                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Mango (300 Clicks)");
-                }
-                document.getElementById('card-ach-mango').classList.add('unlocked-card');
-                document.getElementById('desc-ach-mango').innerText = "¡Completado! Jusep Mango desbloqueado.";
-                document.getElementById('badge-ach-mango').className = "ach-badge badge-unlocked";
-                document.getElementById('badge-ach-mango').innerText = "Desbloqueado 🟢";
-            } else { 
-                document.getElementById('nav-mango').classList.add('locked');
-                document.getElementById('card-ach-mango').classList.remove('unlocked-card');
-                document.getElementById('desc-ach-mango').innerText = `Progreso: ${totalClicksHistoricos}/300 clicks.`;
-                document.getElementById('badge-ach-mango').className = "ach-badge badge-locked";
-                document.getElementById('badge-ach-mango').innerText = "Bloqueado 🔒";
-            }
-
-            const haSidoDesbloqueadoPorCodigo = localStorage.getItem('jusep_nuget_desbloqueado') === 'true';
-            if (totalClicksHistoricos >= 400 || NUGET_PUBLICO || haSidoDesbloqueadoPorCodigo) {
-                if (document.getElementById('nav-nuget').classList.contains('locked')) {
-                    document.getElementById('nav-nuget').classList.remove('locked');
-                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Nuget (400 Clicks)");
-                }
-                document.getElementById('card-ach-nuget').classList.add('unlocked-card');
-                document.getElementById('desc-ach-nuget').innerText = "¡Completado! Jusep Nuget desbloqueado.";
-                document.getElementById('badge-ach-nuget').className = "ach-badge badge-unlocked";
-                document.getElementById('badge-ach-nuget').innerText = "Desbloqueado 🟢";
-            } else {
-                document.getElementById('nav-nuget').classList.add('locked');
-                document.getElementById('card-ach-nuget').classList.remove('unlocked-card');
-                document.getElementById('desc-ach-nuget').innerText = `Progreso: ${totalClicksHistoricos}/400 clicks.`;
-                document.getElementById('badge-ach-nuget').className = "ach-badge badge-locked";
-                document.getElementById('badge-ach-nuget').innerText = "Bloqueado 🔒";
-                if (document.getElementById('nav-nuget').classList.contains('active')) { document.getElementById('nav-inicio').click(); }
+            for (let i = 100; i <= 1000; i += 100) {
+                evaluarUnLogro(i);
             }
         }
 
@@ -782,6 +772,12 @@
 
         profileBtn.addEventListener('click', (e) => { e.stopPropagation(); moreDropdown.classList.remove('show'); profileDropdown.classList.toggle('show'); });
         moreBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.classList.remove('show'); moreDropdown.classList.toggle('show'); });
+        
+        // CORRECCIÓN: Evitar que el dropdown '...' se cierre al hacer click en sus elementos internos (input, botones, etc.)
+        moreDropdown.addEventListener('click', (e) => {
+            e.stopPropagation();
+        });
+
         document.addEventListener('click', () => { profileDropdown.classList.remove('show'); moreDropdown.classList.remove('show'); });
 
         let _supabase = null;
@@ -801,9 +797,7 @@
         redeemBtn.addEventListener('click', async () => {
             const code = giftCodeInput.value.trim();
             if (code === "NugetBAQUE?") {
-                localStorage.setItem('jusep_nuget_desbloqueado', 'true');
-                verificarDesbloqueosYVisibilidad();
-                alert("¡Felicidades! Has desbloqueado permanentemente a Jusep Nuget 👀🍗");
+                alert("¡Código procesado!");
                 giftCodeInput.value = "";
                 guardarProgresoEnCuenta();
             }
