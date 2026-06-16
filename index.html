@@ -417,7 +417,7 @@
                 </div>
                 <div class="shop-item disabled" id="buy-farm" onclick="buyAsset('farm')">
                     <div class="item-info"><div class="item-name">Granja de Monos</div><div class="item-cost" id="cost-farm">Coste: 1100</div></div>
-                    <div class="item-count" id="count-farm">0</div>
+                    <div class="item-count" id="count-grandma">0</div>
                 </div>
                 <div class="shop-item disabled" id="buy-factory" onclick="buyAsset('factory')">
                     <div class="item-info"><div class="item-name">Fábrica BAQUE</div><div class="item-cost" id="cost-factory">Coste: 12000</div></div>
@@ -468,7 +468,7 @@
                 </div>
 
                 <div class="achievement-card" id="card-ach-nuget">
-                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Nuget/nugeticon.png"></div>
+                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Nuget/icon.png"></div>
                     <div class="ach-details">
                         <div class="ach-title">El Crujiente Jusep Legendario</div>
                         <div class="ach-desc" id="desc-ach-nuget">Consigue 400 clicks para desbloquear.</div>
@@ -800,7 +800,11 @@
         document.addEventListener('click', () => { profileDropdown.classList.remove('show'); moreDropdown.classList.remove('show'); });
 
         let _supabase = null;
-        try { if (SUPABASE_URL && SUPABASE_ANON_KEY) _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (err) { console.error(err); }
+        try { 
+            if (SUPABASE_URL && SUPABASE_ANON_KEY && typeof supabase !== 'undefined') {
+                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); 
+            } 
+        } catch (err) { console.error(err); }
 
         loginBtn.addEventListener('click', async () => {
             if (!_supabase) { alert("Configura tus claves de Supabase."); return; }
