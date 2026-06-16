@@ -550,6 +550,9 @@
             factory: { count: 0, cost: 12000, cps: 47 }
         };
         let currentUser = null;
+        
+        // CONTROL DE ASINCRONÍA RADICAL: Bloquea autoguardados mientras se inicializa Supabase
+        let cargandoDatosIniciales = true; 
 
         const sectionsData = {
             "inicio": { title: "Bienvenido a Jusep Verso", desc: "Explora la coleccion de Juseps" },
@@ -580,12 +583,13 @@
         }
 
         function verificarDesbloqueosYVisibilidad() {
-            document.getElementById('ach-total-clicks-label').innerText = `Clicks históricos totales: ${totalClicksHistoricos}`;
+            const labelClicks = document.getElementById('ach-total-clicks-label');
+            if(labelClicks) labelClicks.innerText = `Clicks históricos totales: ${totalClicksHistoricos}`;
 
             if (totalClicksHistoricos >= 100) {
                 if (document.getElementById('nav-esponja').classList.contains('locked')) {
                     document.getElementById('nav-esponja').classList.remove('locked');
-                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Esponja (100 Clicks)");
+                    if (!cargandoDatosIniciales) showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Esponja (100 Clicks)");
                 }
                 document.getElementById('card-ach-esponja').classList.add('unlocked-card');
                 document.getElementById('desc-ach-esponja').innerText = "¡Completado! Jusep Esponja desbloqueado.";
@@ -602,7 +606,7 @@
             if (totalClicksHistoricos >= 200) {
                 if (document.getElementById('nav-estrella').classList.contains('locked')) {
                     document.getElementById('nav-estrella').classList.remove('locked');
-                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Estrella (200 Clicks)");
+                    if (!cargandoDatosIniciales) showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Estrella (200 Clicks)");
                 }
                 document.getElementById('card-ach-estrella').classList.add('unlocked-card');
                 document.getElementById('desc-ach-estrella').innerText = "¡Completado! Jusep Estrella desbloqueado.";
@@ -619,7 +623,7 @@
             if (totalClicksHistoricos >= 300) {
                 if (document.getElementById('nav-mango').classList.contains('locked')) {
                     document.getElementById('nav-mango').classList.remove('locked');
-                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Mango (300 Clicks)");
+                    if (!cargandoDatosIniciales) showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Mango (300 Clicks)");
                 }
                 document.getElementById('card-ach-mango').classList.add('unlocked-card');
                 document.getElementById('desc-ach-mango').innerText = "¡Completado! Jusep Mango desbloqueado.";
@@ -636,7 +640,7 @@
             if (totalClicksHistoricos >= 400 || NUGET_PUBLICO || nugetDesbloqueadoPorCodigo) {
                 if (document.getElementById('nav-nuget').classList.contains('locked')) {
                     document.getElementById('nav-nuget').classList.remove('locked');
-                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Nuget (400 Clicks)");
+                    if (!cargandoDatosIniciales) showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Nuget (400 Clicks)");
                 }
                 document.getElementById('card-ach-nuget').classList.add('unlocked-card');
                 document.getElementById('desc-ach-nuget').innerText = "¡Completado! Jusep Nuget desbloqueado.";
@@ -653,34 +657,40 @@
         }
 
         async function guardarProgresoEnCuenta() {
-            // EXCLUSIVO DE LA NUBE: Si no hay cuenta vinculada activa, el código no realiza ninguna acción
-            if (!currentUser || !_supabase) return;
+            if (cargandoDatosIniciales || !currentUser || !_supabase) return;
 
-            await _supabase.from('user_preferences').upsert({ 
-                user_id: currentUser.id, 
-                cookies_count: Math.floor(cookies),
-                total_clicks: totalClicksHistoricos, 
-                assets_json: JSON.stringify(assets),
-                theme: currentTheme,
-                nuget_code_unlocked: nugetDesbloqueadoPorCodigo
-            }, { onConflict: 'user_id' });
+            try {
+                await _supabase.from('user_preferences').upsert({ 
+                    user_id: currentUser.id, 
+                    cookies_count: Math.floor(cookies),
+                    total_clicks: totalClicksHistoricos, 
+                    assets_json: JSON.stringify(assets),
+                    theme: currentTheme,
+                    nuget_code_unlocked: nugetDesbloqueadoPorCodigo
+                }, { onConflict: 'user_id' });
+            } catch (err) { console.error("Error guardando en Supabase:", err); }
         }
 
         async function cargarProgresoDeCuenta(userId) {
             if (!_supabase) return;
-            resetVariablesANul();
-
-            const { data } = await _supabase.from('user_preferences').select('cookies_count, total_clicks, assets_json, theme, nuget_code_unlocked').eq('user_id', userId).single();
             
-            if (data) {
-                cookies = data.cookies_count || 0;
-                totalClicksHistoricos = data.total_clicks || 0;
-                currentTheme = data.theme || 'defecto';
-                nugetDesbloqueadoPorCodigo = data.nuget_code_unlocked || false;
+            try {
+                const { data } = await _supabase.from('user_preferences').select('cookies_count, total_clicks, assets_json, theme, nuget_code_unlocked').eq('user_id', userId).single();
                 
-                if (data.assets_json) {
-                    assets = JSON.parse(data.assets_json);
+                if (data) {
+                    cookies = parseFloat(data.cookies_count) || 0;
+                    totalClicksHistoricos = parseInt(data.total_clicks) || 0;
+                    currentTheme = data.theme || 'defecto';
+                    nugetDesbloqueadoPorCodigo = data.nuget_code_unlocked || false;
+                    
+                    if (data.assets_json) {
+                        try { assets = JSON.parse(data.assets_json); } catch(e) { console.error("Assets JSON corrupto", e); }
+                    }
+                } else {
+                    resetVariablesANul();
                 }
+            } catch (err) {
+                console.error("Error al descargar progreso remoto:", err);
             }
             
             setTemaVisual(currentTheme);
@@ -751,9 +761,10 @@
             });
         });
 
-        // CLICKER - ACCIÓN DEL JUSEP GIGANTE
+        // CLICKER
         const giantJusep = document.getElementById('giantJusep');
         giantJusep.addEventListener('click', () => {
+            if (cargandoDatosIniciales) return;
             cookies += 1; totalClicksHistoricos += 1;
             giantClickAudio.currentTime = 0; giantClickAudio.play().catch(e => 0);
             
@@ -769,6 +780,7 @@
         }
 
         function buyAsset(key) {
+            if (cargandoDatosIniciales) return;
             let asset = assets[key];
             if (cookies >= asset.cost) {
                 cookies -= asset.cost; asset.count++;
@@ -791,13 +803,14 @@
         }
 
         setInterval(() => {
+            if (cargandoDatosIniciales) return;
             if (getCalculatedCPS() > 0) {
                 cookies += getCalculatedCPS() / 10;
                 if (document.getElementById('clickerGame').style.display === "flex") { updateClickerUI(); }
             }
         }, 100);
 
-        // Envío periódico automático de datos a Supabase cada 8 segundos
+        // Guardado periódico automático a la nube únicamente si no está cargando
         setInterval(() => { guardarProgresoEnCuenta(); }, 8000);
 
         profileBtn.addEventListener('click', (e) => { e.stopPropagation(); moreDropdown.classList.remove('show'); profileDropdown.classList.toggle('show'); });
@@ -849,6 +862,7 @@
 
         themeButtons.forEach(btn => {
             btn.addEventListener('click', async () => {
+                if (cargandoDatosIniciales) return;
                 const selectedTheme = btn.getAttribute('data-theme');
                 currentTheme = selectedTheme;
                 setTemaVisual(selectedTheme);
@@ -859,30 +873,43 @@
         async function updateUI(user) {
             currentUser = user;
             if (user) {
+                // Bloqueamos el guardado automático para evitar sobrescrituras accidentales
+                cargandoDatosIniciales = true; 
+                
                 const avatarUrl = user.user_metadata.avatar_url;
                 const name = user.user_metadata.full_name || user.user_metadata.user_name;
                 avatarImage.src = avatarUrl; avatarImage.style.display = 'block'; avatarDefault.style.display = 'none';
                 profileBtn.classList.add('connected'); dropdownStatus.innerText = `${name}`;
                 loginBtn.style.display = 'none'; logoutBtn.style.display = 'block';
                 
-                // Forzar la descarga directa y asíncrona de los datos guardados en la nube
+                // Forzar descarga de datos y temas desde Supabase de forma limpia y síncrona
                 await cargarProgresoDeCuenta(user.id); 
+                
+                // Una vez los datos están listos y asignados, habilitamos las interacciones de guardado
+                cargandoDatosIniciales = false; 
             } else {
+                // Modo anónimo o desvinculado
+                cargandoDatosIniciales = true;
                 avatarImage.src = ''; avatarImage.style.display = 'none'; avatarDefault.style.display = 'block';
                 profileBtn.classList.remove('connected'); dropdownStatus.innerText = "Cuenta no conectada";
                 loginBtn.style.display = 'flex'; logoutBtn.style.display = 'none';
                 
-                // Reset seguro de variables para el modo sin cuenta
                 resetVariablesANul();
                 setTemaVisual('defecto');
                 verificarDesbloqueosYVisibilidad(); 
                 updateClickerUI();
+                cargandoDatosIniciales = false;
             }
         }
 
+        // CONTROLADOR INICIAL SANEADO
         if (_supabase) {
             _supabase.auth.onAuthStateChange((event, session) => {
-                if (session) updateUI(session.user); else updateUI(null);
+                if (session && session.user) {
+                    updateUI(session.user); 
+                } else { 
+                    updateUI(null); 
+                }
             });
         } else {
             updateUI(null);
