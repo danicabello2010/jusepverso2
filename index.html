@@ -6,13 +6,70 @@
     <title>Jusep Verso 2</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
+        /* Paletas con Estilo Material Design 3 Expressive (Tonos vibrantes y fondos profundos armónicos) */
         :root {
             --bg-color: #12181f;
             --text-color: #f1f2f4;
             --text-muted: #868e96;
             --active-bg: #2c353d;
             --active-icon: #3a9ad9;
+            --main-bg: #0d1117;
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        /* Temas Material 3 Expressive aplicados mediante clases en el elemento body */
+        body.theme-rojo {
+            --bg-color: #201010;
+            --main-bg: #140b0b;
+            --text-color: #ffdad9;
+            --text-muted: #dcbebd;
+            --active-bg: #442222;
+            --active-icon: #ffb4ab;
+        }
+
+        body.theme-naranja {
+            --bg-color: #1f1206;
+            --main-bg: #140b02;
+            --text-color: #ffddb6;
+            --text-muted: #dec2a2;
+            --active-bg: #43290f;
+            --active-icon: #ffb776;
+        }
+
+        body.theme-amarillo {
+            --bg-color: #1c1400;
+            --main-bg: #110d00;
+            --text-color: #f2e2bb;
+            --text-muted: #d5c6a1;
+            --active-bg: #3c2f00;
+            --active-icon: #e5c36c;
+        }
+
+        body.theme-verde {
+            --bg-color: #0b150f;
+            --main-bg: #050e0a;
+            --text-color: #e1e3df;
+            --text-muted: #c5c7c3;
+            --active-bg: #1f3729;
+            --active-icon: #6cdb9d;
+        }
+
+        body.theme-azul {
+            --bg-color: #0c1520;
+            --main-bg: #050e18;
+            --text-color: #e2e2e9;
+            --text-muted: #c6c6cd;
+            --active-bg: #1d3147;
+            --active-icon: #9ecafe;
+        }
+
+        body.theme-morado {
+            --bg-color: #17101f;
+            --main-bg: #100a16;
+            --text-color: #f5daff;
+            --text-muted: #d9bedf;
+            --active-bg: #352249;
+            --active-icon: #e8b3ff;
         }
 
         body {
@@ -24,6 +81,7 @@
             display: flex;
             height: 100vh;
             overflow: hidden;
+            transition: background-color 0.3s ease;
         }
 
         .sidebar {
@@ -37,13 +95,14 @@
             gap: 4px;
             position: relative;
             flex-shrink: 0;
+            transition: background-color 0.3s ease;
         }
 
         /* CONTENEDOR PRINCIPAL DERECHO */
         .main-content {
             flex-grow: 1;
             height: 100vh;
-            background-color: #0d1117;
+            background-color: var(--main-bg);
             color: var(--text-color);
             position: relative;
             display: flex;
@@ -52,6 +111,7 @@
             align-items: center;
             text-align: center;
             box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
         .main-content h1 {
@@ -78,7 +138,7 @@
             width: 100%;
             height: 100%;
             object-fit: cover;
-            cursor: pointer; /* Cursor de mano para hacer clic */
+            cursor: pointer;
             display: none;
         }
 
@@ -91,7 +151,8 @@
             padding-right: 4px;
         }
 
-        .profile-container {
+        /* CONTENEDORES RELATIVOS PARA MENÚS DESPLEGABLES */
+        .more-container, .profile-container {
             position: relative;
         }
 
@@ -99,8 +160,8 @@
             width: 32px;
             height: 32px;
             border-radius: 50%;
-            background-color: #1a222b;
-            border: 1px solid #3a444f;
+            background-color: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -132,23 +193,33 @@
             display: none;
         }
 
-        .profile-dropdown {
+        /* DROPDOWNS: DISEÑO COMÚN */
+        .profile-dropdown, .more-dropdown {
             position: absolute;
             top: 38px;
-            right: 0;
-            background-color: #1a232d;
-            border: 1px solid #2d3846;
-            border-radius: 10px;
-            width: 210px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-            padding: 10px;
+            background-color: rgba(25, 30, 40, 0.95);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            padding: 14px;
             display: none;
             z-index: 100;
             flex-direction: column;
-            gap: 8px;
+            gap: 10px;
         }
 
-        .profile-dropdown.show {
+        .profile-dropdown {
+            right: 0;
+            width: 210px;
+        }
+
+        .more-dropdown {
+            left: 0;
+            width: 260px;
+        }
+
+        .profile-dropdown.show, .more-dropdown.show {
             display: flex;
         }
 
@@ -161,6 +232,116 @@
             overflow: hidden;
             text-overflow: ellipsis;
         }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: rgba(255, 255, 255, 0.08);
+            margin: 4px 0;
+        }
+
+        /* SECCIÓN DEL INTERIOR DE CANJEAR CÓDIGO */
+        .redeem-section {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .redeem-section label {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .redeem-input-group {
+            display: flex;
+            gap: 6px;
+        }
+
+        .redeem-input {
+            background-color: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 6px;
+            color: var(--text-color);
+            padding: 6px 10px;
+            font-size: 13px;
+            flex-grow: 1;
+            outline: none;
+        }
+
+        .redeem-input:focus {
+            border-color: var(--active-icon);
+        }
+
+        .btn-redeem-action {
+            background-color: #2ea44f;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .btn-redeem-action:hover {
+            background-color: #2c974b;
+        }
+
+        /* SECCIÓN DEL INTERIOR DE TEMAS */
+        .themes-section {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .themes-section span {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+        }
+
+        .theme-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+        }
+
+        .btn-theme-select {
+            background-color: rgba(255, 255, 255, 0.04);
+            color: var(--text-color);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 8px 6px;
+            font-size: 12px;
+            cursor: pointer;
+            text-align: center;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .btn-theme-select:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            border-color: var(--text-muted);
+        }
+
+        .btn-theme-select.active-theme {
+            border-color: var(--active-icon);
+            background-color: var(--active-bg);
+            font-weight: 600;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
+        }
+
+        /* Colores sutiles indicadores para los botones de temas */
+        .btn-theme-select[data-theme="rojo"] { border-left: 4px solid #ffb4ab; }
+        .btn-theme-select[data-theme="naranja"] { border-left: 4px solid #ffb776; }
+        .btn-theme-select[data-theme="amarillo"] { border-left: 4px solid #e5c36c; }
+        .btn-theme-select[data-theme="verde"] { border-left: 4px solid #6cdb9d; }
+        .btn-theme-select[data-theme="azul"] { border-left: 4px solid #9ecafe; }
+        .btn-theme-select[data-theme="morado"] { border-left: 4px solid #e8b3ff; }
 
         .btn-github-action {
             background-color: #24292e;
@@ -199,7 +380,7 @@
         }
 
         .btn-more {
-            background-color: #2c353d;
+            background-color: var(--active-bg);
             border: none;
             border-radius: 8px;
             width: 54px;
@@ -208,6 +389,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
+            transition: background-color 0.2s;
         }
 
         .btn-more svg {
@@ -225,7 +407,7 @@
             font-weight: 400;
             gap: 16px;
             cursor: pointer;
-            transition: background 0.2s;
+            transition: background 0.2s, color 0.2s;
         }
 
         .nav-item:hover {
@@ -234,11 +416,22 @@
 
         .nav-item.active {
             background-color: var(--active-bg);
+            color: var(--text-color);
+            font-weight: 500;
+        }
+
+        .nav-icon-square {
+            width: 24px;
+            height: 24px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border-radius: 0; 
+            border: none;       
         }
 
         .nav-item svg {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             flex-shrink: 0;
         }
 
@@ -265,6 +458,11 @@
             height: 14px;
             fill: currentColor;
         }
+
+        /* Jusep Nuget oculto por defecto en CSS */
+        #nav-nuget {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -272,22 +470,51 @@
     <audio id="bgMusic" src="./Jusep_data/Jusep/Sonidodemonos.mp3" loop></audio>
     <audio id="bgEsponjaMusic" src="./Jusep_data/Esponja/bsjusu.mp3" loop></audio>
     <audio id="bgEstrellaMusic" src="./Jusep_data/Estrella/baquehuate.mp3" loop></audio>
-    <audio id="bgMangoMusic" src="./Jusep_data/Jusep/fondo_mango.mp3" loop></audio>
+    <audio id="bgMangoMusic" src="./Jusep_data/Mango/mangosong.mp3" loop></audio>
+    <audio id="bgNugetMusic" src="./Jusep_data/Nuget/nugetsong.mp3" loop></audio> 
 
     <audio id="clickSound" src="./Jusep_data/Jusep/Hypercharge.mp3"></audio>
     <audio id="clickEsponjaSound" src="./Jusep_data/Esponja/sad.mp3"></audio>
     <audio id="clickEstrellaSound" src="./Jusep_data/Estrella/baquerisa.mp3"></audio>
-    <audio id="clickMangoSound" src="./Jusep_data/Jusep/RUTA_SONIDO_MANGO.mp3"></audio>
+    <audio id="clickMangoSound" src="./Jusep_data/Mango/mangolaugh.mp3"></audio>
+    <audio id="clickNugetSound" src="./Jusep_data/Nuget/nugetclick.mp3"></audio> 
 
     <div class="sidebar">
         <div class="window-controls">
-            <button class="btn-more">
-                <svg width="24" height="24" viewBox="0 0 24 24">
-                    <circle cx="6" cy="12" r="2"/>
-                    <circle cx="12" cy="12" r="2"/>
-                    <circle cx="18" cy="12" r="2"/>
-                </svg>
-            </button>
+            <div class="more-container">
+                <button class="btn-more" id="moreBtn">
+                    <svg width="24" height="24" viewBox="0 0 24 24">
+                        <circle cx="6" cy="12" r="2"/>
+                        <circle cx="12" cy="12" r="2"/>
+                        <circle cx="18" cy="12" r="2"/>
+                    </svg>
+                </button>
+
+                <div class="more-dropdown" id="moreDropdown">
+                    <div class="redeem-section">
+                        <label for="giftCode">Canjear codigo BAQUE</label>
+                        <div class="redeem-input-group">
+                            <input type="text" id="giftCode" class="redeem-input" placeholder="Introduce el código...">
+                            <button class="btn-redeem-action" id="redeemBtn">Canjear</button>
+                        </div>
+                    </div>
+                    
+                    <div class="dropdown-divider"></div>
+
+                    <div class="themes-section">
+                        <span>Cambiar Tema</span>
+                        <div class="theme-options">
+                            <button class="btn-theme-select active-theme" data-theme="defecto">Defecto</button>
+                            <button class="btn-theme-select" data-theme="rojo">Rojo</button>
+                            <button class="btn-theme-select" data-theme="naranja">Naranja</button>
+                            <button class="btn-theme-select" data-theme="amarillo">Amarillo</button>
+                            <button class="btn-theme-select" data-theme="verde">Verde</button>
+                            <button class="btn-theme-select" data-theme="azul">Azul</button>
+                            <button class="btn-theme-select" data-theme="morado">Morado</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
             <div class="profile-container">
                 <button class="btn-profile" id="profileBtn" title="Vincular tu cuenta real de GitHub">
@@ -303,45 +530,44 @@
                         <svg width="15" height="15" viewBox="0 0 16 16" fill="#fff">
                             <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
                         </svg>
-                        Conectar cuenta real
+                        Conectar cuenta
                     </button>
                     <button class="btn-logout-action" id="logoutBtn">Desconectar cuenta</button>
                 </div>
             </div>
         </div>
 
-        <a class="nav-item active" data-section="jusep">
+        <a class="nav-item active" data-section="inicio">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                <polyline points="9 22 9 12 15 12 15 22"></polyline>
             </svg>
+            <span>Inicio</span>
+        </a>
+
+        <a class="nav-item" data-section="jusep">
+            <img class="nav-icon-square" src="./Jusep_data/Jusep/icon.png" alt="Jusep">
             <span>Jusep</span>
         </a>
 
         <a class="nav-item" data-section="jusep-esponja">
-            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                <circle cx="9" cy="7" r="4"></circle>
-                <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-            </svg>
+            <img class="nav-icon-square" src="./Jusep_data/Esponja/icon.png" alt="Jusep Esponja">
             <span>Jusep Esponja</span>
         </a>
 
         <a class="nav-item" data-section="jusep-estrella">
-            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
+            <img class="nav-icon-square" src="./Jusep_data/Estrella/icon.png" alt="Jusep Estrella">
             <span>Jusep Estrella</span>
         </a>
 
         <a class="nav-item" data-section="jusep-mango">
-            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="12 6 12 12 16 14"></polyline>
-            </svg>
+            <img class="nav-icon-square" src="./Jusep_data/Mango/mangoicon.png" alt="Jusep Mango">
             <span>Jusep Mango</span>
+        </a>
+
+        <a class="nav-item" data-section="jusep-nuget" id="nav-nuget">
+            <img class="nav-icon-square" src="./Jusep_data/Nuget/nugeticon.png" alt="Jusep Nuget">
+            <span>Jusep Nuget</span>
         </a>
 
         <div class="section-header">
@@ -350,20 +576,12 @@
         </div>
 
         <a class="nav-item" data-section="jusep-clicker">
-            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="8 12 12 16 16 12"></polyline>
-                <line x1="12" y1="8" x2="12" y2="16"></line>
-            </svg>
+            <img class="nav-icon-square" src="./Jusep_data/Jusep Clicker/icon.png" alt="Jusep Clicker">
             <span>Jusep Clicker</span>
         </a>
 
         <a class="nav-item" data-section="jusep-rpg">
-            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="10"></circle>
-                <polyline points="8 12 12 16 16 12"></polyline>
-                <line x1="12" y1="8" x2="12" y2="16"></line>
-            </svg>
+            <img class="nav-icon-square" src="./Jusep_data/Jusep RPG/icon.png" alt="Jusep RPG">
             <span>Jusep RPG</span>
         </a>
 
@@ -374,28 +592,40 @@
 
         <a class="nav-item" data-section="primer-lanzamiento">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"></path>
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <path d="M16 8h2"></path>
+                <path d="M16 12h2"></path>
+                <path d="M16 16h2"></path>
+                <path d="M6 8h6v8H6z"></path>
             </svg>
-            <span>Primer Lanzamiento</span>
+            <span>Primera BETA de Jusep Verso 2</span>
         </a>
     </div>
 
     <div class="main-content" id="mainContent">
-        <h1 id="contentTitle">Bienvenido al Jusep Verso</h1>
-        <p id="contentDesc">Selecciona una opción del menú de la barra lateral para ver su contenido.</p>
+        <h1 id="contentTitle">Bienvenido a Jusep Verso</h1>
+        <p id="contentDesc">Explora la coleccion de Juseps</p>
         
         <img id="jusepImgElement" class="jusep-image" src="./Jusep_data/Jusep/jusep.jpg" alt="Jusep Original">
         <img id="jusepEsponjaImg" class="jusep-image" src="./Jusep_data/Esponja/jusuesponja.jpg" alt="Jusep Esponja">
         <img id="jusepEstrellaImg" class="jusep-image" src="./Jusep_data/Estrella/estrella.jpg" alt="Jusep Estrella">
         <img id="jusepMangoImg" class="jusep-image" src="./Jusep_data/Mango/mangowp.png" alt="Jusep Mango">
+        <img id="jusepNugetImg" class="jusep-image" src="./Jusep_data/Nuget/nugetwp.png" alt="Jusep Nuget"> 
     </div>
 
     <script>
+        // =========================================================================
+        // INTERRUPTOR DE ACCESIBILIDAD FUTURA (Hacer público a Jusep Nuget)
+        // Cambia esto a `true` cuando quieras que aparezca para todo el mundo sin restricciones
+        const NUGET_PUBLICO = false; 
+        // =========================================================================
+
         // === COLOCA TUS DATOS DE SUPABASE AQUÍ ===
         const SUPABASE_URL = "https://fimkpoqhzwruxhpsavhc.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_TTXdlD8qqhYbBtLdSaWxqA_Ca_Uip7u"; 
         // ========================================
 
+        // Elementos antiguos
         const profileBtn = document.getElementById('profileBtn');
         const profileDropdown = document.getElementById('profileDropdown');
         const loginBtn = document.getElementById('loginBtn');
@@ -404,86 +634,128 @@
         const avatarImage = document.getElementById('avatarImage');
         const dropdownStatus = document.getElementById('dropdownStatus');
 
+        // Elementos del menú "..."
+        const moreBtn = document.getElementById('moreBtn');
+        const moreDropdown = document.getElementById('moreDropdown');
+        const giftCodeInput = document.getElementById('giftCode');
+        const redeemBtn = document.getElementById('redeemBtn');
+        const themeButtons = document.querySelectorAll('.btn-theme-select');
+
         const contentTitle = document.getElementById('contentTitle');
         const contentDesc = document.getElementById('contentDesc');
         
-        // Elementos de Imagen obtenidos del HTML
         const jusepImgElement = document.getElementById('jusepImgElement');
         const jusepEsponjaImg = document.getElementById('jusepEsponjaImg');
         const jusepEstrellaImg = document.getElementById('jusepEstrellaImg');
         const jusepMangoImg = document.getElementById('jusepMangoImg');
+        const jusepNugetImg = document.getElementById('jusepNugetImg'); 
 
-        // Elementos de Música de Fondo
         const bgMusic = document.getElementById('bgMusic');
         const bgEsponjaMusic = document.getElementById('bgEsponjaMusic');
         const bgEstrellaMusic = document.getElementById('bgEstrellaMusic');
         const bgMangoMusic = document.getElementById('bgMangoMusic');
+        const bgNugetMusic = document.getElementById('bgNugetMusic'); 
 
-        // Elementos de Sonido de Clic obtenidos del HTML
         const clickSound = document.getElementById('clickSound');
         const clickEsponjaSound = document.getElementById('clickEsponjaSound');
         const clickEstrellaSound = document.getElementById('clickEstrellaSound');
         const clickMangoSound = document.getElementById('clickMangoSound');
+        const clickNugetSound = document.getElementById('clickNugetSound'); 
         
         const navItems = document.querySelectorAll('.nav-item');
+        const navNuget = document.getElementById('nav-nuget'); 
+
+        // Variable global del usuario actual
+        let currentUser = null;
 
         const sectionsData = {
+            "inicio": {
+                title: "Bienvenido al Jusep Verso",
+                desc: "Selecciona una opción del menú de la barra lateral para ver su contenido."
+            },
             "jusep": { title: "", desc: "" },
             "jusep-esponja": { title: "", desc: "" },
             "jusep-estrella": { title: "", desc: "" },
             "jusep-mango": { title: "", desc: "" },
+            "jusep-nuget": { title: "", desc: "" }, 
             "jusep-clicker": {
-                title: "🎮 Jusep Clicker",
-                desc: "Sección en desarrollo. Prepárate para reventar el ratón haciendo clics y ganar Jusep-Coins."
+                title: "Jusep Clicker 🍪👀",
+                desc: "Muy Pronto, ¿Codigo BAQUE? ... > Canjear codigo"
             },
             "jusep-rpg": {
-                title: "⚔️ Jusep RPG",
-                desc: "Sección en desarrollo. Una aventura medieval fantástica interactiva basada en decisiones."
+                title: "Jusep RPG 🦴🔵👀",
+                desc: "EN DESAROLLO, POSIBLE LANZAMIENTO 2027"
             },
             "primer-lanzamiento": {
-                title: "📰 Primer Lanzamiento",
-                desc: "Notas del parche: Versión 2.0. Se ha implementado el inicio de sesión OAuth2 real integrado con GitHub."
+                title: "Cambios de la version 2026.06.16",
+                desc: "Se añadio un nuevo Jusep (JUSEP MANGO), se agrego un sistema de cuentas, tambien se agregaron dos espacios para futuros juegos, temas y codigos BAQUE"
             }
         };
 
-        // --- ASIGNACIÓN DE CLICS A CADA IMAGEN CON SU RESPECTIVO AUDIO ---
+        // --- CONTROL EXTRICTO DE VISIBILIDAD DE JUSEP NUGET ---
+        function verificarVisibilidadNuget() {
+            // Condición futura global libre
+            if (NUGET_PUBLICO) {
+                navNuget.style.display = "flex";
+                return;
+            }
+
+            // Condición actual: Debe estar logueado Y haber canjeado el código en este navegador
+            const haSidoDesbloqueado = localStorage.getItem('jusep_nuget_desbloqueado') === 'true';
+            if (currentUser && haSidoDesbloqueado) {
+                navNuget.style.display = "flex";
+            } else {
+                // Si cambia de pestaña a Nuget y se desloguea, lo devuelve a inicio
+                if (navNuget.classList.contains('active')) {
+                    document.querySelector('[data-section="inicio"]').click();
+                }
+                navNuget.style.display = "none";
+            }
+        }
+
+        // --- MANEJO DE REPRODUCCIONES DE AUDIO ---
         jusepImgElement.addEventListener('click', () => {
             clickSound.currentTime = 0;
-            clickSound.play().catch(err => console.log("Error audio Jusep:", err));
+            clickSound.play().catch(err => console.log(err));
         });
 
         jusepEsponjaImg.addEventListener('click', () => {
             clickEsponjaSound.currentTime = 0;
-            clickEsponjaSound.play().catch(err => console.log("Error audio Esponja:", err));
+            clickEsponjaSound.play().catch(err => console.log(err));
         });
 
         jusepEstrellaImg.addEventListener('click', () => {
             clickEstrellaSound.currentTime = 0;
-            clickEstrellaSound.play().catch(err => console.log("Error audio Estrella:", err));
+            clickEstrellaSound.play().catch(err => console.log(err));
         });
 
         jusepMangoImg.addEventListener('click', () => {
             clickMangoSound.currentTime = 0;
-            clickMangoSound.play().catch(err => console.log("Error audio Mango:", err));
+            clickMangoSound.play().catch(err => console.log(err));
         });
 
-        // Ocultar todas las imágenes secundarias del main-content de golpe
+        jusepNugetImg.addEventListener('click', () => {
+            clickNugetSound.currentTime = 0;
+            clickNugetSound.play().catch(err => console.log(err));
+        });
+
         function hideAllImages() {
             jusepImgElement.style.display = "none";
             jusepEsponjaImg.style.display = "none";
             jusepEstrellaImg.style.display = "none";
             jusepMangoImg.style.display = "none";
+            jusepNugetImg.style.display = "none";
         }
 
-        // Pausar de golpe todos los reproductores de música de fondo para que no se superpongan
         function pauseAllBackgroundMusic() {
             bgMusic.pause();
             bgEsponjaMusic.pause();
             bgEstrellaMusic.pause();
             bgMangoMusic.pause();
+            bgNugetMusic.pause();
         }
 
-        // LÓGICA DE INTERCAMBIO DE SECCIONES
+        // Intercambio de navegación de pestañas
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 navItems.forEach(nav => nav.classList.remove('active'));
@@ -496,67 +768,84 @@
                     contentDesc.innerText = sectionsData[targetKey].desc;
                 }
 
-                // Por defecto ocultamos textos e imágenes y paramos toda la música ambiental
                 contentTitle.style.display = "none"; 
                 contentDesc.style.display = "none";  
                 hideAllImages();
                 pauseAllBackgroundMusic();
 
-                // Evaluamos a qué sección se ingresa y activamos su respectiva música
-                if (targetKey === "jusep") {
+                if (targetKey === "inicio") {
+                    contentTitle.style.display = "block"; 
+                    contentDesc.style.display = "block";
+                }
+                else if (targetKey === "jusep") {
                     jusepImgElement.style.display = "block"; 
-                    bgMusic.play().catch(err => console.log("Audio Jusep en espera de interacción.", err));
+                    bgMusic.play().catch(err => console.log(err));
                 } 
                 else if (targetKey === "jusep-esponja") {
                     jusepEsponjaImg.style.display = "block";
-                    bgEsponjaMusic.play().catch(err => console.log("Audio Esponja en espera de interacción.", err));
+                    bgEsponjaMusic.play().catch(err => console.log(err));
                 } 
                 else if (targetKey === "jusep-estrella") {
                     jusepEstrellaImg.style.display = "block";
-                    bgEstrellaMusic.play().catch(err => console.log("Audio Estrella en espera de interacción.", err));
+                    bgEstrellaMusic.play().catch(err => console.log(err));
                 } 
                 else if (targetKey === "jusep-mango") {
                     jusepMangoImg.style.display = "block";
-                    bgMangoMusic.play().catch(err => console.log("Audio Mango en espera de interacción.", err));
+                    bgMangoMusic.play().catch(err => console.log(err));
                 } 
+                else if (targetKey === "jusep-nuget") {
+                    jusepNugetImg.style.display = "block";
+                    bgNugetMusic.play().catch(err => console.log(err));
+                }
                 else {
-                    // Si es una sección con textos (como Jueguitos o Noticias) volvemos a mostrarlos
                     contentTitle.style.display = "block"; 
                     contentDesc.style.display = "block";
                 }
             });
         });
 
-        // Configuración de arranque inicial
         const activeItem = document.querySelector('.nav-item.active');
-        if(activeItem && activeItem.getAttribute('data-section') === 'jusep') {
-            contentTitle.style.display = "none";
-            contentDesc.style.display = "none";
+        if(activeItem && activeItem.getAttribute('data-section') === 'inicio') {
+            contentTitle.style.display = "block";
+            contentDesc.style.display = "block";
             hideAllImages();
-            jusepImgElement.style.display = "block";
         }
 
-        // MENÚ PROFILE
+        // --- MANEJO DE MENÚS DESPLEGABLES ---
         profileBtn.addEventListener('click', (e) => {
             e.stopPropagation();
+            moreDropdown.classList.remove('show');
             profileDropdown.classList.toggle('show');
         });
 
-        document.addEventListener('click', () => profileDropdown.classList.remove('show'));
-        profileDropdown.addEventListener('click', (e) => e.stopPropagation());
+        moreBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.remove('show');
+            moreDropdown.classList.toggle('show');
+        });
 
+        document.addEventListener('click', () => {
+            profileDropdown.classList.remove('show');
+            moreDropdown.classList.remove('show');
+        });
+
+        profileDropdown.addEventListener('click', (e) => e.stopPropagation());
+        moreDropdown.addEventListener('click', (e) => e.stopPropagation());
+
+
+        // --- CONEXIÓN DE SUPABASE ---
         let _supabase = null;
         try {
-            if (SUPABASE_URL !== "TU_URL_AQUÍ" && SUPABASE_ANON_KEY !== "TU_CLAVE_ANON_AQUÍ") {
+            if (SUPABASE_URL && SUPABASE_ANON_KEY) {
                 _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
             }
         } catch (err) {
-            console.error("Error al cargar Supabase, revisa tus claves:", err);
+            console.error(err);
         }
 
         loginBtn.addEventListener('click', async () => {
             if (!_supabase) {
-                alert("Primero debes poner tus claves de Supabase en el código.");
+                alert("Primero debes configurar tus claves válidas de Supabase.");
                 return;
             }
             dropdownStatus.innerText = "Abriendo GitHub...";
@@ -575,7 +864,62 @@
             updateUI(null);
         });
 
+        // Lógica de canjeo de códigos vinculados
+        redeemBtn.addEventListener('click', async () => {
+            const code = giftCodeInput.value.trim();
+            if (!code) {
+                alert("Por favor, escribe un código.");
+                return;
+            }
+
+            // Canjeo del código condicional de Nuget
+            if (code === "NugetBAQUE?") {
+                if (!currentUser) {
+                    alert("¡Error! Debes conectar tu cuenta primero para poder canjear códigos especiales.");
+                    return;
+                }
+                localStorage.setItem('jusep_nuget_desbloqueado', 'true');
+                verificarVisibilidadNuget();
+                alert("¡Felicidades! Has desbloqueado permanentemente a Jusep Nuget 👀🍗");
+                giftCodeInput.value = "";
+                return;
+            }
+
+            if (!currentUser) {
+                alert("¡Debes conectar tu cuenta de GitHub primero para guardar la tarjeta de regalo de manera persistente!");
+                return;
+            }
+            alert(`Enviando tarjeta regalo: "${code}" para la cuenta vinculada con ID: ${currentUser.id}. (Listo para guardar en la tabla Supabase)`);
+            giftCodeInput.value = "";
+        });
+
+        // --- LÓGICA DE TEMAS ---
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', async () => {
+                const selectedTheme = btn.getAttribute('data-theme');
+                
+                themeButtons.forEach(b => b.classList.remove('active-theme'));
+                btn.classList.add('active-theme');
+
+                document.body.className = '';
+                if (selectedTheme !== 'defecto') {
+                    document.body.classList.add(`theme-${selectedTheme}`);
+                }
+
+                if (!currentUser) {
+                    localStorage.setItem('jusep_local_theme', selectedTheme);
+                    return;
+                }
+            });
+        });
+
+
         function updateUI(user) {
+            currentUser = user;
+
+            // Cada vez que cambia el estado del usuario, recalculamos si debe ver a Jusep Nuget
+            verificarVisibilidadNuget();
+
             if (user) {
                 const avatarUrl = user.user_metadata.avatar_url;
                 const name = user.user_metadata.full_name || user.user_metadata.user_name;
@@ -595,6 +939,15 @@
                 dropdownStatus.innerText = "Cuenta no conectada";
                 loginBtn.style.display = 'flex';
                 logoutBtn.style.display = 'none';
+
+                const localTheme = localStorage.getItem('jusep_local_theme') || 'defecto';
+                document.body.className = '';
+                themeButtons.forEach(b => b.classList.remove('active-theme'));
+                if (localTheme !== 'defecto') {
+                    document.body.classList.add(`theme-${localTheme}`);
+                }
+                const activeBtn = document.querySelector(`.btn-theme-select[data-theme="${localTheme}"]`);
+                if (activeBtn) activeBtn.classList.add('active-theme');
             }
         }
 
@@ -603,6 +956,12 @@
                 if (session) updateUI(session.user);
                 else updateUI(null);
             });
+        } else {
+            const localTheme = localStorage.getItem('jusep_local_theme') || 'defecto';
+            if (localTheme !== 'defecto') document.body.classList.add(`theme-${localTheme}`);
+            const activeBtn = document.querySelector(`.btn-theme-select[data-theme="${localTheme}"]`);
+            if (activeBtn) activeBtn.classList.add('active-theme');
+            verificarVisibilidadNuget();
         }
     </script>
 </body>
