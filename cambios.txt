@@ -1,0 +1,15 @@
+Sistema de Sonido Independiente
+- Se ha configurado una pista de audio independiente exclusivamente para el Jusep Gigante dentro del minijuego Clicker.
+- El clickeo continuado sobre el Jusep Gigante ya no interfiere ni corta la música o los efectos de la galería principal.
+
+Compatibilidad Mobile Edition
+- Interfaz completamente adaptada para dispositivos móviles mediante un sistema de navegación inferior inteligente.
+- Optimización de los paneles desplegables (Menú Más y Perfil) que ahora actúan de forma flotante y compacta en pantallas táctiles.
+- Ajuste de escala automático para las imágenes de los Juseps y el Jusep Gigante en teléfonos y tablets.
+
+Estabilidad y Carga Dinámica
+- Implementación de un lector híbrido para las notas de la versión. Ahora la aplicación es capaz de leer este archivo 'cambios.txt' dinámicamente si se ejecuta en servidor.
+
+Limpieza general
+- Consolidación de variables de configuración al inicio del script para facilitar futuros cambios de rutas o contenidos.
+- Corrección de bugs menores en el contador de cookies y optimización de guardado local (LocalStorage).

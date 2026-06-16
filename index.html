@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <link rel="icon" type="image/png" href="icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jusep Verso 2 - Mobile Edition</title>
+    <title>Jusep Verso 2
+    </title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* Paletas con Estilo Material Design 3 Expressive */
@@ -61,13 +63,13 @@
             background-color: var(--bg-color);
             box-sizing: border-box;
             padding: 20px 16px;
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
             position: relative;
             flex-shrink: 0;
             transition: background-color 0.3s ease;
             overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
 
         /* CONTENEDOR PRINCIPAL DERECHO */
@@ -87,7 +89,7 @@
         }
 
         .main-content h1 { margin: 0 0 16px 0; font-size: 32px; font-weight: 600; padding: 0 20px; z-index: 2; }
-        .main-content p { color: var(--text-muted); font-size: 16px; margin: 0; max-width: 500px; line-height: 1.5; padding: 0 20px; z-index: 2; }
+        .main-content p { color: var(--text-muted); font-size: 16px; margin: 0; max-width: 500px; line-height: 1.5; padding: 0 20px; z-index: 2; white-space: pre-wrap; text-align: center; }
 
         /* IMÁGENES ABSOLUTAS */
         .jusep-image {
@@ -163,6 +165,7 @@
             display: flex; align-items: center; padding: 10px 12px; border-radius: 10px;
             color: var(--text-color); text-decoration: none; font-size: 15px; gap: 16px; cursor: pointer;
         }
+        .nav-item.locked { display: none !important; }
         .nav-item:hover { background-color: rgba(255, 255, 255, 0.05); }
         .nav-item.active { background-color: var(--active-bg); font-weight: 500; }
 
@@ -173,100 +176,128 @@
         .section-header { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 12px; font-weight: 700; text-transform: uppercase; padding: 14px 12px 4px 12px; }
         .section-header svg { width: 14px; height: 14px; fill: currentColor; }
 
-        #nav-nuget { display: none; }
+        /* NOTIFICACIONES DE LOGROS FLOTANTES */
+        .achievement-toast {
+            position: fixed; top: 20px; right: 20px; background-color: #2ea44f; color: white;
+            padding: 12px 20px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            font-size: 14px; font-weight: bold; z-index: 9999; display: none; animation: slideIn 0.3s ease, fadeOut 0.5s ease 3.5s forwards;
+        }
+        @keyframes slideIn { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-        /* =========================================================================
-           MÓVIL / PANTALLAS VERTICALES (MEDIA QUERY)
-           ========================================================================= */
+        /* COOKIE CLICKER INTERFACE */
+        .clicker-container {
+            display: none; width: 100%; height: 100%; z-index: 5;
+            flex-direction: row; box-sizing: border-box; background: radial-gradient(circle, rgba(23,32,42,1) 0%, rgba(13,17,23,1) 100%);
+        }
+        .clicker-left {
+            flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 20px; box-sizing: border-box;
+        }
+        .clicker-right {
+            width: 280px; background-color: rgba(0, 0, 0, 0.4); border-left: 1px solid rgba(255, 255, 255, 0.08);
+            display: flex; flex-direction: column; padding: 16px; box-sizing: border-box; overflow-y: auto; text-align: left;
+        }
+        .clicker-stats { font-size: 24px; font-weight: bold; margin-bottom: 4px; color: var(--text-color); text-shadow: 0 2px 4px rgba(0,0,0,0.5); }
+        .clicker-cps { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+        .giant-jusep-btn {
+            width: 220px; height: 220px; border-radius: 50%; object-fit: cover;
+            cursor: pointer; box-shadow: 0 0 30px rgba(58, 154, 217, 0.3);
+            transition: transform 0.05s ease; user-select: none; -webkit-user-drag: none;
+        }
+        .giant-jusep-btn:active { transform: scale(0.92); }
+        
+        .shop-title { font-size: 16px; font-weight: 700; text-transform: uppercase; color: var(--active-icon); margin-bottom: 12px; letter-spacing: 0.5px; }
+
+        .shop-item {
+            display: flex; align-items: center; justify-content: space-between; background-color: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08); border-radius: 8px; padding: 10px; margin-bottom: 8px;
+            cursor: pointer; transition: background-color 0.2s, opacity 0.2s; user-select: none;
+        }
+        .shop-item:hover { background-color: rgba(255, 255, 255, 0.08); }
+        .shop-item.disabled { opacity: 0.4; cursor: not-allowed; background-color: rgba(0,0,0,0.2); }
+        .item-info { display: flex; flex-direction: column; gap: 2px; }
+        .item-name { font-size: 14px; font-weight: 600; color: var(--text-color); }
+        .item-cost { font-size: 12px; color: #e5c36c; font-weight: bold; }
+        .item-count { font-size: 16px; font-weight: bold; color: var(--text-muted); padding-left: 8px; }
+
+        /* SISTEMA VISUAL DE LOGROS PANEL */
+        .achievements-panel {
+            display: none; width: 100%; height: 100%; z-index: 6;
+            flex-direction: column; box-sizing: border-box; padding: 24px;
+            overflow-y: auto; text-align: left; background-color: var(--main-bg);
+        }
+        .achievements-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; margin-top: 16px;
+        }
+        .achievement-card {
+            background-color: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 12px; padding: 16px; display: flex; gap: 14px; align-items: center;
+            transition: border-color 0.3s, background-color 0.3s;
+        }
+        .achievement-card.unlocked-card {
+            border-color: rgba(46, 164, 79, 0.4); background-color: rgba(46, 164, 79, 0.05);
+        }
+        .ach-icon-wrapper { width: 50px; height: 50px; flex-shrink: 0; filter: grayscale(100%); opacity: 0.4; }
+        .achievement-card.unlocked-card .ach-icon-wrapper { filter: grayscale(0%); opacity: 1; }
+        .ach-icon-wrapper img { width: 100%; height: 100%; object-fit: cover; border-radius: 8px; }
+        .ach-details { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
+        .ach-title { font-size: 15px; font-weight: 600; color: var(--text-color); }
+        .ach-desc { font-size: 12px; color: var(--text-muted); }
+        .ach-badge { font-size: 11px; padding: 2px 6px; border-radius: 4px; font-weight: bold; width: fit-content; }
+        .badge-locked { background-color: rgba(255, 255, 255, 0.08); color: var(--text-muted); }
+        .badge-unlocked { background-color: #2ea44f; color: white; }
+
         @media (max-width: 768px) {
-            body {
-                flex-direction: column-reverse; /* El contenido arriba, el menú abajo */
-            }
-
-            /* Cambiar la barra lateral en una barra inferior horizontal haptica */
+            body { flex-direction: column-reverse; }
             .sidebar {
-                width: 100%;
-                height: 75px;
-                min-height: 75px;
-                flex-direction: row;
-                align-items: center;
-                justify-content: space-between;
-                padding: 0 10px;
-                gap: 0;
-                overflow-y: hidden;
-                overflow-x: auto;
-                border-top: 1px solid rgba(255, 255, 255, 0.08);
-                z-index: 99;
+                width: 100%; height: 75px; min-height: 75px; flex-direction: row;
+                align-items: center; justify-content: space-between; padding: 0 10px; gap: 0;
+                overflow-y: hidden; overflow-x: auto; border-top: 1px solid rgba(255, 255, 255, 0.08); z-index: 99;
             }
-
-            /* Ocultar las cabeceras de sección y textos en los botones en el menú móvil */
-            .sidebar .section-header, 
-            .sidebar .nav-item span {
-                display: none !important;
-            }
-
-            .window-controls {
-                margin-bottom: 0;
-                padding: 0;
-                gap: 8px;
-            }
-
-            /* Adaptar botones para que queden cómodos al dedo */
-            .nav-item {
-                padding: 12px;
-                border-radius: 12px;
-                justify-content: center;
-                flex-grow: 1;
-            }
-
-            .main-content {
-                width: 100%;
-                height: calc(100vh - 75px);
-            }
-
-            .main-content h1 { font-size: 26px; }
-            .main-content p { font-size: 14px; }
-
-            /* Reposicionar los Desplegables en formato "Modales Flotantes Inferiores" */
+            .sidebar .section-header, .sidebar .nav-item span { display: none !important; }
+            .window-controls { margin-bottom: 0; padding: 0; gap: 8px; }
+            .nav-item { padding: 12px; border-radius: 12px; justify-content: center; flex-grow: 1; }
+            .main-content { width: 100%; height: calc(100vh - 75px); }
+            .main-content h1 { font-size: 26px; } .main-content p { font-size: 14px; }
             .more-dropdown, .profile-dropdown {
-                position: fixed;
-                bottom: 85px; /* Flotan justo arriba de la barra de navegación */
-                top: auto !important;
-                left: 16px !important;
-                right: 16px !important;
-                width: calc(100% - 32px) !important;
-                box-sizing: border-box;
-                background-color: rgba(15, 20, 30, 0.98);
-                box-shadow: 0 -4px 25px rgba(0,0,0,0.8);
+                position: fixed; bottom: 85px; top: auto !important;
+                left: 16px !important; right: 16px !important; width: calc(100% - 32px) !important;
+                box-sizing: border-box; background-color: rgba(15, 20, 30, 0.98); box-shadow: 0 -4px 25px rgba(0,0,0,0.8);
             }
+            .clicker-container { flex-direction: column; overflow-y: auto; }
+            .clicker-left { flex-shrink: 0; padding: 16px; }
+            .giant-jusep-btn { width: 160px; height: 160px; }
+            .clicker-stats { font-size: 20px; }
+            .clicker-right { width: 100%; height: auto; border-left: none; border-top: 1px solid rgba(255, 255, 255, 0.08); overflow-y: visible; }
+            .achievements-panel { padding: 16px; }
+            .achievements-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
 
+    <div id="toast" class="achievement-toast">¡Logro desbloqueado! 🏆</div>
+
     <audio id="bgMusic" src="./Jusep_data/Jusep/Sonidodemonos.mp3" loop></audio>
     <audio id="bgEsponjaMusic" src="./Jusep_data/Esponja/bsjusu.mp3" loop></audio>
     <audio id="bgEstrellaMusic" src="./Jusep_data/Estrella/baquehuate.mp3" loop></audio>
     <audio id="bgMangoMusic" src="./Jusep_data/Mango/mangosong.mp3" loop></audio>
-    <audio id="bgNugetMusic" src="./Jusep_data/Nuget/nugetsong.mp3" loop></audio> 
+    <audio id="bgNugetMusic" src="./Jusep_data/Nuget/bgmusic.mp3" loop></audio> 
 
-    <audio id="clickSound" src="./Jusep_data/Jusep/Hypercharge.mp3"></audio>
-    <audio id="clickEsponjaSound" src="./Jusep_data/Esponja/sad.mp3"></audio>
-    <audio id="clickEstrellaSound" src="./Jusep_data/Estrella/baquerisa.mp3"></audio>
-    <audio id="clickMangoSound" src="./Jusep_data/Mango/mangolaugh.mp3"></audio>
-    <audio id="clickNugetSound" src="./Jusep_data/Nuget/nugetclick.mp3"></audio> 
+    <audio id="audioJusep" src="./Jusep_data/Jusep/Hypercharge.mp3"></audio>
+    <audio id="audioEsponja" src="./Jusep_data/Esponja/sad.mp3"></audio>
+    <audio id="audioEstrella" src="./Jusep_data/Estrella/baquerisa.mp3"></audio>
+    <audio id="audioMango" src="./Jusep_data/Mango/mangolaugh.mp3"></audio>
+    <audio id="audioNuget" src="./Jusep_data/Nuget/effect.mp3"></audio>
+
+    <audio id="giantClickAudio"></audio>
 
     <div class="sidebar">
         <div class="window-controls">
             <div class="more-container">
                 <button class="btn-more" id="moreBtn">
-                    <svg width="24" height="24" viewBox="0 0 24 24">
-                        <circle cx="6" cy="12" r="2"/>
-                        <circle cx="12" cy="12" r="2"/>
-                        <circle cx="18" cy="12" r="2"/>
-                    </svg>
+                    <svg width="24" height="24" viewBox="0 0 24 24"><circle cx="6" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>
                 </button>
-
                 <div class="more-dropdown" id="moreDropdown">
                     <div class="redeem-section">
                         <label for="giftCode">Canjear codigo BAQUE</label>
@@ -293,78 +324,68 @@
 
             <div class="profile-container">
                 <button class="btn-profile" id="profileBtn" title="Vincular cuenta GitHub">
-                    <svg id="avatarDefault" viewBox="0 0 16 16">
-                        <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                    </svg>
+                    <svg id="avatarDefault" viewBox="0 0 16 16"><path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/></svg>
                     <img id="avatarImage" src="" alt="GitHub Avatar">
                 </button>
-
                 <div class="profile-dropdown" id="profileDropdown">
                     <div class="dropdown-info" id="dropdownStatus">Cuenta no conectada</div>
-                    <button class="btn-github-action" id="loginBtn">
-                        <svg width="15" height="15" viewBox="0 0 16 16" fill="#fff">
-                            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
-                        </svg>
-                        Conectar cuenta
-                    </button>
+                    <button class="btn-github-action" id="loginBtn">Conectar cuenta</button>
                     <button class="btn-logout-action" id="logoutBtn">Desconectar cuenta</button>
                 </div>
             </div>
         </div>
 
-        <a class="nav-item active" data-section="inicio" title="Inicio">
-            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
-                <polyline points="9 22 9 12 15 12 15 22"></polyline>
-            </svg>
+        <a class="nav-item active" data-section="inicio" id="nav-inicio">
+            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
             <span>Inicio</span>
         </a>
 
-        <a class="nav-item" data-section="jusep" title="Jusep">
+        <a class="nav-item" data-section="jusep" id="nav-jusep">
             <img class="nav-icon-square" src="./Jusep_data/Jusep/icon.png" alt="Jusep">
             <span>Jusep</span>
         </a>
 
-        <a class="nav-item" data-section="jusep-esponja" title="Jusep Esponja">
+        <a class="nav-item locked" data-section="jusep-esponja" id="nav-esponja">
             <img class="nav-icon-square" src="./Jusep_data/Esponja/icon.png" alt="Jusep Esponja">
             <span>Jusep Esponja</span>
         </a>
 
-        <a class="nav-item" data-section="jusep-estrella" title="Jusep Estrella">
+        <a class="nav-item locked" data-section="jusep-estrella" id="nav-estrella">
             <img class="nav-icon-square" src="./Jusep_data/Estrella/icon.png" alt="Jusep Estrella">
             <span>Jusep Estrella</span>
         </a>
 
-        <a class="nav-item" data-section="jusep-mango" title="Jusep Mango">
+        <a class="nav-item locked" data-section="jusep-mango" id="nav-mango">
             <img class="nav-icon-square" src="./Jusep_data/Mango/mangoicon.png" alt="Jusep Mango">
             <span>Jusep Mango</span>
         </a>
 
-        <a class="nav-item" data-section="jusep-nuget" id="nav-nuget" title="Jusep Nuget">
-            <img class="nav-icon-square" src="./Jusep_data/Nuget/nugeticon.png" alt="Jusep Nuget">
-            <span>Jusep Nuget</span>
+        <a class="nav-item locked" data-section="jusep-nuget" id="nav-nuget">
+            <img class="nav-icon-square" src="./Jusep_data/Nuget/icon.png" alt="Jusep Nuget">
+            <span>Jusep Nugget</span>
         </a>
 
         <div class="section-header"><span>Jueguitos</span></div>
-
-        <a class="nav-item" data-section="jusep-clicker" title="Jusep Clicker">
+        <a class="nav-item" data-section="jusep-clicker" id="nav-clicker">
             <img class="nav-icon-square" src="./Jusep_data/Jusep Clicker/icon.png" alt="Jusep Clicker">
             <span>Jusep Clicker</span>
         </a>
-
-        <a class="nav-item" data-section="jusep-rpg" title="Jusep RPG">
+        <a class="nav-item" data-section="logros-panel" id="nav-logros">
+            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="8" r="7"></circle>
+                <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline>
+            </svg>
+            <span>Logros</span>
+        </a>
+        <a class="nav-item" data-section="jusep-rpg">
             <img class="nav-icon-square" src="./Jusep_data/Jusep RPG/icon.png" alt="Jusep RPG">
             <span>Jusep RPG</span>
         </a>
 
         <div class="section-header"><span>Noticias</span></div>
-
-        <a class="nav-item" data-section="primer-lanzamiento" title="Noticias">
-            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2">
-                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <path d="M16 8h2M16 12h2M16 16h2M6 8h6v8H6z"></path>
-            </svg>
-            <span>Primera BETA</span>
+        <a class="nav-item" data-section="primer-lanzamiento">
+            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><path d="M16 8h2M16 12h2M16 16h2M6 8h6v8H6z"/></svg>
+            <span>Cambios de la version</span>
         </a>
     </div>
 
@@ -376,13 +397,110 @@
         <img id="jusepEsponjaImg" class="jusep-image" src="./Jusep_data/Esponja/jusuesponja.jpg" alt="Jusep Esponja">
         <img id="jusepEstrellaImg" class="jusep-image" src="./Jusep_data/Estrella/estrella.jpg" alt="Jusep Estrella">
         <img id="jusepMangoImg" class="jusep-image" src="./Jusep_data/Mango/mangowp.png" alt="Jusep Mango">
-        <img id="jusepNugetImg" class="jusep-image" src="./Jusep_data/Nuget/nugetwp.png" alt="Jusep Nuget"> 
+        <img id="jusepNugetImg" class="jusep-image" src="./Jusep_data/Nuget/nugetwp.png" alt="Jusep Nuget">
+
+        <div id="clickerGame" class="clicker-container">
+            <div class="clicker-left">
+                <div class="clicker-stats" id="cookieCount">0 Jusep Cookies</div>
+                <div class="clicker-cps" id="cpsCount">por segundo: 0</div>
+                <img class="giant-jusep-btn" id="giantJusep" src="./Jusep_data/Jusep Clicker/icon.png" alt="Giant Jusep">
+            </div>
+            <div class="clicker-right">
+                <div class="shop-title">Tienda</div>
+                <div class="shop-item disabled" id="buy-cursor" onclick="buyAsset('cursor')">
+                    <div class="item-info"><div class="item-name">Cursor (Auto-Click)</div><div class="item-cost" id="cost-cursor">Coste: 15</div></div>
+                    <div class="item-count" id="count-cursor">0</div>
+                </div>
+                <div class="shop-item disabled" id="buy-grandma" onclick="buyAsset('grandma')">
+                    <div class="item-info"><div class="item-name">Abuela Jusep</div><div class="item-cost" id="cost-grandma">Coste: 100</div></div>
+                    <div class="item-count" id="count-grandma">0</div>
+                </div>
+                <div class="shop-item disabled" id="buy-farm" onclick="buyAsset('farm')">
+                    <div class="item-info"><div class="item-name">Granja de Monos</div><div class="item-cost" id="cost-farm">Coste: 1100</div></div>
+                    <div class="item-count" id="count-farm">0</div>
+                </div>
+                <div class="shop-item disabled" id="buy-factory" onclick="buyAsset('factory')">
+                    <div class="item-info"><div class="item-name">Fábrica BAQUE</div><div class="item-cost" id="cost-factory">Coste: 12000</div></div>
+                    <div class="item-count" id="count-factory">0</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="achievementsPanel" class="achievements-panel">
+            <h2 style="margin: 0 0 4px 0; font-size: 24px;">Sala de Logros Baque</h2>
+            <p style="color: var(--text-muted); font-size: 14px; margin-bottom: 20px;" id="ach-total-clicks-label">Clicks históricos totales: 0</p>
+            
+            <div class="achievements-grid">
+                <div class="achievement-card unlocked-card" id="card-ach-jusep">
+                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Jusep/icon.png"></div>
+                    <div class="ach-details">
+                        <div class="ach-title">El Comienzo del Verso</div>
+                        <div class="ach-desc">Desbloquea al Jusep Original base.</div>
+                        <span class="ach-badge badge-unlocked">Desbloqueado 🟢</span>
+                    </div>
+                </div>
+
+                <div class="achievement-card" id="card-ach-esponja">
+                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Esponja/icon.png"></div>
+                    <div class="ach-details">
+                        <div class="ach-title">Jusep Pantalones Cuadrados</div>
+                        <div class="ach-desc" id="desc-ach-esponja">Consigue 100 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-esponja">Bloqueado 🔒</span>
+                    </div>
+                </div>
+
+                <div class="achievement-card" id="card-ach-estrella">
+                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Estrella/icon.png"></div>
+                    <div class="ach-details">
+                        <div class="ach-title">Estrella del Baquehuate</div>
+                        <div class="ach-desc" id="desc-ach-estrella">Consigue 200 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-estrella">Bloqueado 🔒</span>
+                    </div>
+                </div>
+
+                <div class="achievement-card" id="card-ach-mango">
+                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Mango/mangoicon.png"></div>
+                    <div class="ach-details">
+                        <div class="ach-title">El Dulce Sabor del Éxito</div>
+                        <div class="ach-desc" id="desc-ach-mango">Consigue 300 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-mango">Bloqueado 🔒</span>
+                    </div>
+                </div>
+
+                <div class="achievement-card" id="card-ach-nuget">
+                    <div class="ach-icon-wrapper"><img src="./Jusep_data/Nuget/nugeticon.png"></div>
+                    <div class="ach-details">
+                        <div class="ach-title">El Crujiente Jusep Legendario</div>
+                        <div class="ach-desc" id="desc-ach-nuget">Consigue 400 clicks para desbloquear.</div>
+                        <span class="ach-badge badge-locked" id="badge-ach-nuget">Bloqueado 🔒</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
 
     <script>
-        const NUGET_PUBLICO = false; 
+        // =========================================================================
+        // 🎵 RUTA DEL SONIDO ÚNICAMENTE PARA EL JUSEP GIGANTE DEL CLICKER
+        // Cambia la ruta de aquí abajo por la que tú quieras que suene al clickar la cookie:
+        // =========================================================================
+        const RUTA_SONIDO_JUSEP_GIGANTE = "./Jusep_data/Jusep/Hypercharge.mp3"; 
 
-        // Configuración Supabase
+        // =========================================================================
+        // 📄 RUTA DEL ARCHIVO TXT PARA LA SECCIÓN "PRIMERA BETA"
+        // Cambia esta ruta por la de tu archivo de texto (ej. "./cambios.txt")
+        // =========================================================================
+        const RUTA_TEXTO_BETA = "./cambios.txt";
+
+        // =========================================================================
+        // 📝 TEXTO DE RESPALDO (Por si abres el archivo localmente como file:/// )
+        // Si no usas un servidor local, se mostrará este texto automáticamente:
+        // =========================================================================
+        const TEXTO_RESPALDO_BETA = "Cambios de la versión 2026.06.16:\n\n- Se ha configurado un sonido independiente exclusivamente para el Jusep Gigante del Clicker.\n- Se habilitó la carga dinámica de notas desde archivos externos.\n- Optimizaciones de estabilidad en la interfaz móvil.";
+
+
+        const NUGET_PUBLICO = false;
         const SUPABASE_URL = "https://fimkpoqhzwruxhpsavhc.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_TTXdlD8qqhYbBtLdSaWxqA_Ca_Uip7u"; 
 
@@ -394,13 +512,11 @@
         const avatarDefault = document.getElementById('avatarDefault');
         const avatarImage = document.getElementById('avatarImage');
         const dropdownStatus = document.getElementById('dropdownStatus');
-
         const moreBtn = document.getElementById('moreBtn');
         const moreDropdown = document.getElementById('moreDropdown');
         const giftCodeInput = document.getElementById('giftCode');
         const redeemBtn = document.getElementById('redeemBtn');
         const themeButtons = document.querySelectorAll('.btn-theme-select');
-
         const contentTitle = document.getElementById('contentTitle');
         const contentDesc = document.getElementById('contentDesc');
         
@@ -416,60 +532,167 @@
         const bgMangoMusic = document.getElementById('bgMangoMusic');
         const bgNugetMusic = document.getElementById('bgNugetMusic'); 
 
-        const clickSound = document.getElementById('clickSound');
-        const clickEsponjaSound = document.getElementById('clickEsponjaSound');
-        const clickEstrellaSound = document.getElementById('clickEstrellaSound');
-        const clickMangoSound = document.getElementById('clickMangoSound');
-        const clickNugetSound = document.getElementById('clickNugetSound'); 
+        // Audios de la Galería
+        const audioJusep = document.getElementById('audioJusep');
+        const audioEsponja = document.getElementById('audioEsponja');
+        const audioEstrella = document.getElementById('audioEstrella');
+        const audioMango = document.getElementById('audioMango');
+        const audioNuget = document.getElementById('audioNuget');
+
+        // Asignación de sonido específico para el clicker
+        const giantClickAudio = document.getElementById('giantClickAudio');
+        giantClickAudio.src = RUTA_SONIDO_JUSEP_GIGANTE;
         
         const navItems = document.querySelectorAll('.nav-item');
-        const navNuget = document.getElementById('nav-nuget'); 
 
+        // ESTADO GLOBAL
+        let cookies = 0;
+        let totalClicksHistoricos = 0; 
+        let assets = {
+            cursor: { count: 0, cost: 15, cps: 0.1 },
+            grandma: { count: 0, cost: 100, cps: 1 },
+            farm: { count: 0, cost: 1100, cps: 8 },
+            factory: { count: 0, cost: 12000, cps: 47 }
+        };
         let currentUser = null;
 
         const sectionsData = {
-            "inicio": { title: "Bienvenido al Jusep Verso", desc: "Selecciona una opción del menú para ver su contenido." },
-            "jusep": { title: "", desc: "" },
-            "jusep-esponja": { title: "", desc: "" },
-            "jusep-estrella": { title: "", desc: "" },
-            "jusep-mango": { title: "", desc: "" },
-            "jusep-nuget": { title: "", desc: "" }, 
-            "jusep-clicker": { title: "Jusep Clicker 🍪👀", desc: "Muy Pronto, ¿Codigo BAQUE? ... > Canjear codigo" },
+            "inicio": { title: "Bienvenido a Jusep Verso", desc: "Explora la coleccion de Juseps" },
+            "jusep": { title: "", desc: "" }, "jusep-esponja": { title: "", desc: "" },
+            "jusep-estrella": { title: "", desc: "" }, "jusep-mango": { title: "", desc: "" }, "jusep-nuget": { title: "", desc: "" }, 
+            "jusep-clicker": { title: "", desc: "" }, "logros-panel": { title: "", desc: "" },
             "jusep-rpg": { title: "Jusep RPG 🦴🔵👀", desc: "EN DESAROLLO, POSIBLE LANZAMIENTO 2027" },
-            "primer-lanzamiento": { title: "Cambios de la version 2026.06.16", desc: "Se añadio un nuevo Jusep (JUSEP MANGO), sistema de cuentas en la nube, soporte móvil responsivo, temas y códigos BAQUE." }
+            "primer-lanzamiento": { title: "Cambios de la version", desc: "Cargando notas de la versión..." }
         };
 
-        function verificarVisibilidadNuget() {
-            if (NUGET_PUBLICO) { navNuget.style.display = "flex"; return; }
-            const haSidoDesbloqueado = localStorage.getItem('jusep_nuget_desbloqueado') === 'true';
-            if (currentUser && haSidoDesbloqueado) {
-                navNuget.style.display = "flex";
-            } else {
-                if (navNuget.classList.contains('active')) {
-                    document.querySelector('[data-section="inicio"]').click();
+        function showAchievementNotification(text) {
+            const toast = document.getElementById('toast');
+            toast.innerText = text; toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 4000);
+        }
+
+        function verificarDesbloqueosYVisibilidad() {
+            document.getElementById('ach-total-clicks-label').innerText = `Clicks históricos totales: ${totalClicksHistoricos}`;
+
+            if (totalClicksHistoricos >= 100) {
+                if (document.getElementById('nav-esponja').classList.contains('locked')) {
+                    document.getElementById('nav-esponja').classList.remove('locked');
+                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Esponja (100 Clicks)");
                 }
-                navNuget.style.display = "none";
+                document.getElementById('card-ach-esponja').classList.add('unlocked-card');
+                document.getElementById('desc-ach-esponja').innerText = "¡Completado! Jusep Esponja desbloqueado.";
+                document.getElementById('badge-ach-esponja').className = "ach-badge badge-unlocked";
+                document.getElementById('badge-ach-esponja').innerText = "Desbloqueado 🟢";
+            } else { 
+                document.getElementById('nav-esponja').classList.add('locked');
+                document.getElementById('card-ach-esponja').classList.remove('unlocked-card');
+                document.getElementById('desc-ach-esponja').innerText = `Progreso: ${totalClicksHistoricos}/100 clicks.`;
+                document.getElementById('badge-ach-esponja').className = "ach-badge badge-locked";
+                document.getElementById('badge-ach-esponja').innerText = "Bloqueado 🔒";
+            }
+
+            if (totalClicksHistoricos >= 200) {
+                if (document.getElementById('nav-estrella').classList.contains('locked')) {
+                    document.getElementById('nav-estrella').classList.remove('locked');
+                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Estrella (200 Clicks)");
+                }
+                document.getElementById('card-ach-estrella').classList.add('unlocked-card');
+                document.getElementById('desc-ach-estrella').innerText = "¡Completado! Jusep Estrella desbloqueado.";
+                document.getElementById('badge-ach-estrella').className = "ach-badge badge-unlocked";
+                document.getElementById('badge-ach-estrella').innerText = "Desbloqueado 🟢";
+            } else { 
+                document.getElementById('nav-estrella').classList.add('locked');
+                document.getElementById('card-ach-estrella').classList.remove('unlocked-card');
+                document.getElementById('desc-ach-estrella').innerText = `Progreso: ${totalClicksHistoricos}/200 clicks.`;
+                document.getElementById('badge-ach-estrella').className = "ach-badge badge-locked";
+                document.getElementById('badge-ach-estrella').innerText = "Bloqueado 🔒";
+            }
+
+            if (totalClicksHistoricos >= 300) {
+                if (document.getElementById('nav-mango').classList.contains('locked')) {
+                    document.getElementById('nav-mango').classList.remove('locked');
+                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Mango (300 Clicks)");
+                }
+                document.getElementById('card-ach-mango').classList.add('unlocked-card');
+                document.getElementById('desc-ach-mango').innerText = "¡Completado! Jusep Mango desbloqueado.";
+                document.getElementById('badge-ach-mango').className = "ach-badge badge-unlocked";
+                document.getElementById('badge-ach-mango').innerText = "Desbloqueado 🟢";
+            } else { 
+                document.getElementById('nav-mango').classList.add('locked');
+                document.getElementById('card-ach-mango').classList.remove('unlocked-card');
+                document.getElementById('desc-ach-mango').innerText = `Progreso: ${totalClicksHistoricos}/300 clicks.`;
+                document.getElementById('badge-ach-mango').className = "ach-badge badge-locked";
+                document.getElementById('badge-ach-mango').innerText = "Bloqueado 🔒";
+            }
+
+            const haSidoDesbloqueadoPorCodigo = localStorage.getItem('jusep_nuget_desbloqueado') === 'true';
+            if (totalClicksHistoricos >= 400 || NUGET_PUBLICO || haSidoDesbloqueadoPorCodigo) {
+                if (document.getElementById('nav-nuget').classList.contains('locked')) {
+                    document.getElementById('nav-nuget').classList.remove('locked');
+                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Nuget (400 Clicks)");
+                }
+                document.getElementById('card-ach-nuget').classList.add('unlocked-card');
+                document.getElementById('desc-ach-nuget').innerText = "¡Completado! Jusep Nuget desbloqueado.";
+                document.getElementById('badge-ach-nuget').className = "ach-badge badge-unlocked";
+                document.getElementById('badge-ach-nuget').innerText = "Desbloqueado 🟢";
+            } else {
+                document.getElementById('nav-nuget').classList.add('locked');
+                document.getElementById('card-ach-nuget').classList.remove('unlocked-card');
+                document.getElementById('desc-ach-nuget').innerText = `Progreso: ${totalClicksHistoricos}/400 clicks.`;
+                document.getElementById('badge-ach-nuget').className = "ach-badge badge-locked";
+                document.getElementById('badge-ach-nuget').innerText = "Bloqueado 🔒";
+                if (document.getElementById('nav-nuget').classList.contains('active')) { document.getElementById('nav-inicio').click(); }
             }
         }
 
-        // Eventos Clicks interactivos
-        jusepImgElement.addEventListener('click', () => { clickSound.currentTime = 0; clickSound.play().catch(e=>0); });
-        jusepEsponjaImg.addEventListener('click', () => { clickEsponjaSound.currentTime = 0; clickEsponjaSound.play().catch(e=>0); });
-        jusepEstrellaImg.addEventListener('click', () => { clickEstrellaSound.currentTime = 0; clickEstrellaSound.play().catch(e=>0); });
-        jusepMangoImg.addEventListener('click', () => { clickMangoSound.currentTime = 0; clickMangoSound.play().catch(e=>0); });
-        jusepNugetImg.addEventListener('click', () => { clickNugetSound.currentTime = 0; clickNugetSound.play().catch(e=>0); });
+        async function guardarProgresoEnCuenta() {
+            if (!currentUser) {
+                localStorage.setItem('jusep_local_cookies', cookies);
+                localStorage.setItem('jusep_local_clicks_historicos', totalClicksHistoricos);
+                localStorage.setItem('jusep_local_assets', JSON.stringify(assets));
+                return;
+            }
+            if (!_supabase) return;
+            await _supabase.from('user_preferences').upsert({ 
+                user_id: currentUser.id, cookies_count: Math.floor(cookies),
+                total_clicks: totalClicksHistoricos, assets_json: JSON.stringify(assets)
+            }, { onConflict: 'user_id' });
+        }
+
+        async function cargarProgresoDeCuenta(userId) {
+            if (!_supabase) return;
+            const { data } = await _supabase.from('user_preferences').select('cookies_count, total_clicks, assets_json').eq('user_id', userId).single();
+            if (data) {
+                cookies = data.cookies_count || 0; totalClicksHistoricos = data.total_clicks || 0;
+                if (data.assets_json) assets = JSON.parse(data.assets_json);
+            } else {
+                cookies = parseFloat(localStorage.getItem('jusep_local_cookies')) || 0;
+                totalClicksHistoricos = parseInt(localStorage.getItem('jusep_local_clicks_historicos')) || 0;
+                const localAssets = localStorage.getItem('jusep_local_assets');
+                if (localAssets) assets = JSON.parse(localAssets);
+            }
+            verificarDesbloqueosYVisibilidad(); updateClickerUI();
+        }
+
+        // Clicks en imágenes de la galería (mantienen sus sonidos originales individuales)
+        jusepImgElement.addEventListener('click', () => { audioJusep.currentTime = 0; audioJusep.play().catch(e=>0); });
+        jusepEsponjaImg.addEventListener('click', () => { audioEsponja.currentTime = 0; audioEsponja.play().catch(e=>0); });
+        jusepEstrellaImg.addEventListener('click', () => { audioEstrella.currentTime = 0; audioEstrella.play().catch(e=>0); });
+        jusepMangoImg.addEventListener('click', () => { audioMango.currentTime = 0; audioMango.play().catch(e=>0); });
+        jusepNugetImg.addEventListener('click', () => { audioNuget.currentTime = 0; audioNuget.play().catch(e=>0); });
 
         function hideAllImages() {
             jusepImgElement.style.display = "none"; jusepEsponjaImg.style.display = "none";
             jusepEstrellaImg.style.display = "none"; jusepMangoImg.style.display = "none";
-            jusepNugetImg.style.display = "none";
+            jusepNugetImg.style.display = "none"; 
+            document.getElementById('clickerGame').style.display = "none";
+            document.getElementById('achievementsPanel').style.display = "none";
         }
 
         function pauseAllBackgroundMusic() {
             bgMusic.pause(); bgEsponjaMusic.pause(); bgEstrellaMusic.pause(); bgMangoMusic.pause(); bgNugetMusic.pause();
         }
 
-        // Navegación fluida
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 navItems.forEach(nav => nav.classList.remove('active'));
@@ -490,51 +713,115 @@
                 else if (targetKey === "jusep-estrella") { jusepEstrellaImg.style.display = "block"; bgEstrellaMusic.play().catch(e=>0); } 
                 else if (targetKey === "jusep-mango") { jusepMangoImg.style.display = "block"; bgMangoMusic.play().catch(e=>0); } 
                 else if (targetKey === "jusep-nuget") { jusepNugetImg.style.display = "block"; bgNugetMusic.play().catch(e=>0); }
+                else if (targetKey === "jusep-clicker") { document.getElementById('clickerGame').style.display = "flex"; updateClickerUI(); }
+                else if (targetKey === "logros-panel") { document.getElementById('achievementsPanel').style.display = "flex"; verificarDesbloqueosYVisibilidad(); }
+                else if (targetKey === "primer-lanzamiento") {
+                    contentTitle.style.display = "block"; 
+                    contentDesc.style.display = "block";
+                    
+                    // Sistema Híbrido: Detectar si se está abriendo localmente mediante file:///
+                    if (window.location.protocol === 'file:') {
+                        // Carga el texto de respaldo directamente sin romper nada
+                        contentDesc.innerText = TEXTO_RESPALDO_BETA;
+                    } else {
+                        // Si estás en un servidor local (Live Server) o web, ejecuta el fetch normalmente
+                        fetch(RUTA_TEXTO_BETA)
+                            .then(response => {
+                                if (!response.ok) throw new Error("No se pudo encontrar el archivo");
+                                return response.text();
+                            })
+                            .then(text => {
+                                contentDesc.innerText = text;
+                            })
+                            .catch(err => {
+                                // En caso de que falle el archivo en el servidor, usamos el respaldo
+                                contentDesc.innerText = TEXTO_RESPALDO_BETA;
+                                console.log("Cargando texto alternativo por fallo de archivo:", err);
+                            });
+                    }
+                }
                 else { contentTitle.style.display = "block"; contentDesc.style.display = "block"; }
             });
         });
 
-        // Eventos de Menús Desplegables Inteligentes
+        // CLICKER: EL JUSEP GIGANTE REPRODUCE SU PROPIO AUDIO MODIFICADO 🍪
+        const giantJusep = document.getElementById('giantJusep');
+        giantJusep.addEventListener('click', () => {
+            cookies += 1; totalClicksHistoricos += 1;
+            
+            // Sonido exclusivo modificado
+            giantClickAudio.currentTime = 0;
+            giantClickAudio.play().catch(e => 0);
+            
+            verificarDesbloqueosYVisibilidad();
+            updateClickerUI();
+            guardarProgresoEnCuenta();
+        });
+
+        function getCalculatedCPS() {
+            let totalCPS = 0;
+            for (let key in assets) { totalCPS += assets[key].count * assets[key].cps; }
+            return totalCPS;
+        }
+
+        function buyAsset(key) {
+            let asset = assets[key];
+            if (cookies >= asset.cost) {
+                cookies -= asset.cost; asset.count++;
+                asset.cost = Math.floor(asset.cost * 1.15);
+                updateClickerUI(); guardarProgresoEnCuenta();
+            }
+        }
+
+        function updateClickerUI() {
+            document.getElementById('cookieCount').innerText = Math.floor(cookies) + " Jusep Cookies";
+            document.getElementById('cpsCount').innerText = "por segundo: " + getCalculatedCPS().toFixed(1);
+            
+            for (let key in assets) {
+                document.getElementById(`cost-${key}`).innerText = "Coste: " + assets[key].cost;
+                document.getElementById(`count-${key}`).innerText = assets[key].count;
+                let element = document.getElementById(`buy-${key}`);
+                if (cookies >= assets[key].cost) element.classList.remove('disabled');
+                else element.classList.add('disabled');
+            }
+        }
+
+        setInterval(() => {
+            if (getCalculatedCPS() > 0) {
+                cookies += getCalculatedCPS() / 10;
+                if (document.getElementById('clickerGame').style.display === "flex") { updateClickerUI(); }
+            }
+        }, 100);
+
+        setInterval(() => { guardarProgresoEnCuenta(); }, 10000);
+
         profileBtn.addEventListener('click', (e) => { e.stopPropagation(); moreDropdown.classList.remove('show'); profileDropdown.classList.toggle('show'); });
         moreBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.classList.remove('show'); moreDropdown.classList.toggle('show'); });
         document.addEventListener('click', () => { profileDropdown.classList.remove('show'); moreDropdown.classList.remove('show'); });
-        profileDropdown.addEventListener('click', (e) => e.stopPropagation());
-        moreDropdown.addEventListener('click', (e) => e.stopPropagation());
 
-        // Inicializar Supabase
         let _supabase = null;
         try { if (SUPABASE_URL && SUPABASE_ANON_KEY) _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (err) { console.error(err); }
 
         loginBtn.addEventListener('click', async () => {
             if (!_supabase) { alert("Configura tus claves de Supabase."); return; }
-            dropdownStatus.innerText = "Abriendo GitHub...";
             await _supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.href } });
         });
 
         logoutBtn.addEventListener('click', async () => { if (_supabase) await _supabase.auth.signOut(); updateUI(null); });
 
-        // Canjeo de Códigos
         redeemBtn.addEventListener('click', async () => {
             const code = giftCodeInput.value.trim();
-            if (!code) { alert("Escribe un código."); return; }
-
             if (code === "NugetBAQUE?") {
-                if (!currentUser) { alert("¡Error! Debes conectar tu cuenta primero."); return; }
                 localStorage.setItem('jusep_nuget_desbloqueado', 'true');
-                verificarVisibilidadNuget();
+                verificarDesbloqueosYVisibilidad();
                 alert("¡Felicidades! Has desbloqueado permanentemente a Jusep Nuget 👀🍗");
                 giftCodeInput.value = "";
-                return;
+                guardarProgresoEnCuenta();
             }
-            if (!currentUser) { alert("¡Conecta tu cuenta primero!"); return; }
-            alert(`Código enviado a revisión: "${code}"`);
-            giftCodeInput.value = "";
         });
 
-        // Cambiar Temas
         function setTemaVisual(themeName) {
-            document.body.className = '';
-            themeButtons.forEach(b => b.classList.remove('active-theme'));
+            document.body.className = ''; themeButtons.forEach(b => b.classList.remove('active-theme'));
             if (themeName !== 'defecto') document.body.classList.add(`theme-${themeName}`);
             const activeBtn = document.querySelector(`.btn-theme-select[data-theme="${themeName}"]`);
             if (activeBtn) activeBtn.classList.add('active-theme');
@@ -544,54 +831,48 @@
             btn.addEventListener('click', async () => {
                 const selectedTheme = btn.getAttribute('data-theme');
                 setTemaVisual(selectedTheme);
-
-                if (!currentUser) {
-                    localStorage.setItem('jusep_local_theme', selectedTheme);
-                    return;
-                }
-                if (!_supabase) return;
+                if (!currentUser) { localStorage.setItem('jusep_local_theme', selectedTheme); return; }
                 await _supabase.from('user_preferences').upsert({ user_id: currentUser.id, theme: selectedTheme }, { onConflict: 'user_id' });
             });
         });
 
         async function cargarTemaGuardado(userId) {
             if (!_supabase) return;
-            const { data, error } = await _supabase.from('user_preferences').select('theme').eq('user_id', userId).single();
+            const { data } = await _supabase.from('user_preferences').select('theme').eq('user_id', userId).single();
             if (data && data.theme) setTemaVisual(data.theme);
             else setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
         }
 
-        // Actualizar Interfaz según Usuario (Conectado / Desconectado)
         function updateUI(user) {
             currentUser = user;
-            verificarVisibilidadNuget();
-
             if (user) {
                 const avatarUrl = user.user_metadata.avatar_url;
                 const name = user.user_metadata.full_name || user.user_metadata.user_name;
-
                 avatarImage.src = avatarUrl; avatarImage.style.display = 'block'; avatarDefault.style.display = 'none';
-                profileBtn.classList.add('connected');
-                dropdownStatus.innerText = `${name}`;
+                profileBtn.classList.add('connected'); dropdownStatus.innerText = `${name}`;
                 loginBtn.style.display = 'none'; logoutBtn.style.display = 'block';
-                cargarTemaGuardado(user.id);
+                cargarProgresoDeCuenta(user.id); cargarTemaGuardado(user.id);
             } else {
                 avatarImage.src = ''; avatarImage.style.display = 'none'; avatarDefault.style.display = 'block';
-                profileBtn.classList.remove('connected');
-                dropdownStatus.innerText = "Cuenta no conectada";
+                profileBtn.classList.remove('connected'); dropdownStatus.innerText = "Cuenta no conectada";
                 loginBtn.style.display = 'flex'; logoutBtn.style.display = 'none';
+                
+                cookies = parseFloat(localStorage.getItem('jusep_local_cookies')) || 0;
+                totalClicksHistoricos = parseInt(localStorage.getItem('jusep_local_clicks_historicos')) || 0;
+                const localAssets = localStorage.getItem('jusep_local_assets');
+                if (localAssets) assets = JSON.parse(localAssets);
+
                 setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
+                verificarDesbloqueosYVisibilidad(); updateClickerUI();
             }
         }
 
         if (_supabase) {
             _supabase.auth.onAuthStateChange((event, session) => {
-                if (session) updateUI(session.user);
-                else updateUI(null);
+                if (session) updateUI(session.user); else updateUI(null);
             });
         } else {
-            setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
-            verificarVisibilidadNuget();
+            updateUI(null);
         }
     </script>
 </body>
