@@ -289,8 +289,6 @@
     <audio id="audioMango" src="./Jusep_data/Mango/mangolaugh.mp3"></audio>
     <audio id="audioNuget" src="./Jusep_data/Nuget/effect.mp3"></audio>
 
-    <audio id="giantClickAudio"></audio>
-
     <div class="sidebar">
         <div class="window-controls">
             <div class="more-container">
@@ -479,25 +477,23 @@
 
     </div>
 
+    <audio id="giantClickAudio"></audio>
+
     <script>
         // =========================================================================
         // 🎵 RUTA DEL SONIDO ÚNICAMENTE PARA EL JUSEP GIGANTE DEL CLICKER
-        // Cambia la ruta de aquí abajo por la que tú quieras que suene al clickar la cookie:
         // =========================================================================
         const RUTA_SONIDO_JUSEP_GIGANTE = "./Jusep_data/Jusep Clicker/click.mp3"; 
 
         // =========================================================================
         // 📄 RUTA DEL ARCHIVO TXT PARA LA SECCIÓN "PRIMERA BETA"
-        // Cambia esta ruta por la de tu archivo de texto (ej. "./cambios.txt")
         // =========================================================================
         const RUTA_TEXTO_BETA = "./cambios.txt";
 
         // =========================================================================
-        // 📝 TEXTO DE RESPALDO (Por si abres el archivo localmente como file:/// )
-        // Si no usas un servidor local, se mostrará este texto automáticamente:
+        // 📝 TEXTO DE RESPALDO (Por si falla el fetch local)
         // =========================================================================
         const TEXTO_RESPALDO_BETA = "Cambios de la versión 2026.06.16:\n\n- Se ha configurado un sonido independiente exclusivamente para el Jusep Gigante del Clicker.\n- Se habilitó la carga dinámica de notas desde archivos externos.\n- Optimizaciones de estabilidad en la interfaz móvil.";
-
 
         const NUGET_PUBLICO = false;
         const SUPABASE_URL = "https://fimkpoqhzwruxhpsavhc.supabase.co"; 
@@ -531,22 +527,22 @@
         const bgMangoMusic = document.getElementById('bgMangoMusic');
         const bgNugetMusic = document.getElementById('bgNugetMusic'); 
 
-        // Audios de la Galería
         const audioJusep = document.getElementById('audioJusep');
         const audioEsponja = document.getElementById('audioEsponja');
         const audioEstrella = document.getElementById('audioEstrella');
         const audioMango = document.getElementById('audioMango');
         const audioNuget = document.getElementById('audioNuget');
 
-        // Asignación de sonido específico para el clicker
         const giantClickAudio = document.getElementById('giantClickAudio');
         giantClickAudio.src = RUTA_SONIDO_JUSEP_GIGANTE;
         
         const navItems = document.querySelectorAll('.nav-item');
 
-        // ESTADO GLOBAL
+        // ESTADO GLOBAL LIMPIO POR DEFECTO
         let cookies = 0;
         let totalClicksHistoricos = 0; 
+        let currentTheme = 'defecto';
+        let nugetDesbloqueadoPorCodigo = false;
         let assets = {
             cursor: { count: 0, cost: 15, cps: 0.1 },
             grandma: { count: 0, cost: 100, cps: 1 },
@@ -563,6 +559,19 @@
             "jusep-rpg": { title: "Jusep RPG 🦴🔵👀", desc: "EN DESAROLLO, POSIBLE LANZAMIENTO 2027" },
             "primer-lanzamiento": { title: "Cambios de la version", desc: "Cargando notas de la versión..." }
         };
+
+        function resetVariablesANul() {
+            cookies = 0;
+            totalClicksHistoricos = 0;
+            currentTheme = 'defecto';
+            nugetDesbloqueadoPorCodigo = false;
+            assets = {
+                cursor: { count: 0, cost: 15, cps: 0.1 },
+                grandma: { count: 0, cost: 100, cps: 1 },
+                farm: { count: 0, cost: 1100, cps: 8 },
+                factory: { count: 0, cost: 12000, cps: 47 }
+            };
+        }
 
         function showAchievementNotification(text) {
             const toast = document.getElementById('toast');
@@ -624,8 +633,7 @@
                 document.getElementById('badge-ach-mango').innerText = "Bloqueado 🔒";
             }
 
-            const haSidoDesbloqueadoPorCodigo = localStorage.getItem('jusep_nuget_desbloqueado') === 'true';
-            if (totalClicksHistoricos >= 400 || NUGET_PUBLICO || haSidoDesbloqueadoPorCodigo) {
+            if (totalClicksHistoricos >= 400 || NUGET_PUBLICO || nugetDesbloqueadoPorCodigo) {
                 if (document.getElementById('nav-nuget').classList.contains('locked')) {
                     document.getElementById('nav-nuget').classList.remove('locked');
                     showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Nuget (400 Clicks)");
@@ -645,48 +653,42 @@
         }
 
         async function guardarProgresoEnCuenta() {
-            if (!currentUser) {
-                localStorage.setItem('jusep_local_cookies', cookies);
-                localStorage.setItem('jusep_local_clicks_historicos', totalClicksHistoricos);
-                localStorage.setItem('jusep_local_assets', JSON.stringify(assets));
-                return;
-            }
-            if (!_supabase) return;
+            // EXCLUSIVO DE LA NUBE: Si no hay cuenta vinculada activa, el código no realiza ninguna acción
+            if (!currentUser || !_supabase) return;
+
             await _supabase.from('user_preferences').upsert({ 
-                user_id: currentUser.id, cookies_count: Math.floor(cookies),
-                total_clicks: totalClicksHistoricos, assets_json: JSON.stringify(assets)
+                user_id: currentUser.id, 
+                cookies_count: Math.floor(cookies),
+                total_clicks: totalClicksHistoricos, 
+                assets_json: JSON.stringify(assets),
+                theme: currentTheme,
+                nuget_code_unlocked: nugetDesbloqueadoPorCodigo
             }, { onConflict: 'user_id' });
         }
 
         async function cargarProgresoDeCuenta(userId) {
             if (!_supabase) return;
-            const { data } = await _supabase.from('user_preferences').select('cookies_count, total_clicks, assets_json').eq('user_id', userId).single();
-            
-            // Leemos los valores del LocalStorage como plan de respaldo para no perder el progreso actual
-            const localCookies = parseFloat(localStorage.getItem('jusep_local_cookies')) || 0;
-            const localClicks = parseInt(localStorage.getItem('jusep_local_clicks_historicos')) || 0;
+            resetVariablesANul();
 
+            const { data } = await _supabase.from('user_preferences').select('cookies_count, total_clicks, assets_json, theme, nuget_code_unlocked').eq('user_id', userId).single();
+            
             if (data) {
-                // Comparamos y nos quedamos SIEMPRE con el valor más alto para evitar reinicios a 0 involuntarios
-                cookies = Math.max(data.cookies_count || 0, localCookies);
-                totalClicksHistoricos = Math.max(data.total_clicks || 0, localClicks);
+                cookies = data.cookies_count || 0;
+                totalClicksHistoricos = data.total_clicks || 0;
+                currentTheme = data.theme || 'defecto';
+                nugetDesbloqueadoPorCodigo = data.nuget_code_unlocked || false;
                 
                 if (data.assets_json) {
                     assets = JSON.parse(data.assets_json);
-                } else {
-                    const localAssets = localStorage.getItem('jusep_local_assets');
-                    if (localAssets) assets = JSON.parse(localAssets);
                 }
-            } else {
-                cookies = localCookies;
-                totalClicksHistoricos = localClicks;
-                const localAssets = localStorage.getItem('jusep_local_assets');
-                if (localAssets) assets = JSON.parse(localAssets);
             }
-            verificarDesbloqueosYVisibilidad(); updateClickerUI();
+            
+            setTemaVisual(currentTheme);
+            verificarDesbloqueosYVisibilidad(); 
+            updateClickerUI();
         }
 
-        // Clicks en imágenes de la galería (mantienen sus sonidos originales individuales)
+        // Clicks en imágenes de la galería
         jusepImgElement.addEventListener('click', () => { audioJusep.currentTime = 0; audioJusep.play().catch(e=>0); });
         jusepEsponjaImg.addEventListener('click', () => { audioEsponja.currentTime = 0; audioEsponja.play().catch(e=>0); });
         jusepEstrellaImg.addEventListener('click', () => { audioEstrella.currentTime = 0; audioEstrella.play().catch(e=>0); });
@@ -731,24 +733,17 @@
                     contentTitle.style.display = "block"; 
                     contentDesc.style.display = "block";
                     
-                    // Sistema Híbrido: Detectar si se está abriendo localmente mediante file:///
                     if (window.location.protocol === 'file:') {
-                        // Carga el texto de respaldo directamente sin romper nada
                         contentDesc.innerText = TEXTO_RESPALDO_BETA;
                     } else {
-                        // Si estás en un servidor local (Live Server) o web, ejecuta el fetch normalmente
                         fetch(RUTA_TEXTO_BETA)
                             .then(response => {
                                 if (!response.ok) throw new Error("No se pudo encontrar el archivo");
                                 return response.text();
                             })
-                            .then(text => {
-                                contentDesc.innerText = text;
-                            })
+                            .then(text => { contentDesc.innerText = text; })
                             .catch(err => {
-                                // En caso de que falle el archivo en el servidor, usamos el respaldo
                                 contentDesc.innerText = TEXTO_RESPALDO_BETA;
-                                console.log("Cargando texto alternativo por fallo de archivo:", err);
                             });
                     }
                 }
@@ -756,14 +751,11 @@
             });
         });
 
-        // CLICKER: EL JUSEP GIGANTE REPRODUCE SU PROPIO AUDIO MODIFICADO 🍪
+        // CLICKER - ACCIÓN DEL JUSEP GIGANTE
         const giantJusep = document.getElementById('giantJusep');
         giantJusep.addEventListener('click', () => {
             cookies += 1; totalClicksHistoricos += 1;
-            
-            // Sonido exclusivo modificado
-            giantClickAudio.currentTime = 0;
-            giantClickAudio.play().catch(e => 0);
+            giantClickAudio.currentTime = 0; giantClickAudio.play().catch(e => 0);
             
             verificarDesbloqueosYVisibilidad();
             updateClickerUI();
@@ -805,7 +797,8 @@
             }
         }, 100);
 
-        setInterval(() => { guardarProgresoEnCuenta(); }, 10000);
+        // Envío periódico automático de datos a Supabase cada 8 segundos
+        setInterval(() => { guardarProgresoEnCuenta(); }, 8000);
 
         profileBtn.addEventListener('click', (e) => { e.stopPropagation(); moreDropdown.classList.remove('show'); profileDropdown.classList.toggle('show'); });
         moreBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.classList.remove('show'); moreDropdown.classList.toggle('show'); });
@@ -823,12 +816,15 @@
             await _supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.href } });
         });
 
-        logoutBtn.addEventListener('click', async () => { if (_supabase) await _supabase.auth.signOut(); updateUI(null); });
+        logoutBtn.addEventListener('click', async () => { 
+            if (_supabase) await _supabase.auth.signOut(); 
+            updateUI(null); 
+        });
 
         redeemBtn.addEventListener('click', async () => {
             const code = giftCodeInput.value.trim();
             if (code === "NugetBAQUE?") {
-                localStorage.setItem('jusep_nuget_desbloqueado', 'true');
+                nugetDesbloqueadoPorCodigo = true;
                 verificarDesbloqueosYVisibilidad();
                 alert("¡Felicidades! Has desbloqueado permanentemente a Jusep Nuget 👀🍗");
                 giftCodeInput.value = "";
@@ -854,18 +850,11 @@
         themeButtons.forEach(btn => {
             btn.addEventListener('click', async () => {
                 const selectedTheme = btn.getAttribute('data-theme');
+                currentTheme = selectedTheme;
                 setTemaVisual(selectedTheme);
-                if (!currentUser) { localStorage.setItem('jusep_local_theme', selectedTheme); return; }
-                await _supabase.from('user_preferences').upsert({ user_id: currentUser.id, theme: selectedTheme }, { onConflict: 'user_id' });
+                guardarProgresoEnCuenta();
             });
         });
-
-        async function cargarTemaGuardado(userId) {
-            if (!_supabase) return;
-            const { data } = await _supabase.from('user_preferences').select('theme').eq('user_id', userId).single();
-            if (data && data.theme) setTemaVisual(data.theme);
-            else setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
-        }
 
         async function updateUI(user) {
             currentUser = user;
@@ -876,20 +865,16 @@
                 profileBtn.classList.add('connected'); dropdownStatus.innerText = `${name}`;
                 loginBtn.style.display = 'none'; logoutBtn.style.display = 'block';
                 
-                // Esperamos de forma asíncrona a que los datos se descarguen completamente de Supabase
+                // Forzar la descarga directa y asíncrona de los datos guardados en la nube
                 await cargarProgresoDeCuenta(user.id); 
-                await cargarTemaGuardado(user.id);
             } else {
                 avatarImage.src = ''; avatarImage.style.display = 'none'; avatarDefault.style.display = 'block';
                 profileBtn.classList.remove('connected'); dropdownStatus.innerText = "Cuenta no conectada";
                 loginBtn.style.display = 'flex'; logoutBtn.style.display = 'none';
                 
-                cookies = parseFloat(localStorage.getItem('jusep_local_cookies')) || 0;
-                totalClicksHistoricos = parseInt(localStorage.getItem('jusep_local_clicks_historicos')) || 0;
-                const localAssets = localStorage.getItem('jusep_local_assets');
-                if (localAssets) assets = JSON.parse(localAssets);
-
-                setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
+                // Reset seguro de variables para el modo sin cuenta
+                resetVariablesANul();
+                setTemaVisual('defecto');
                 verificarDesbloqueosYVisibilidad(); 
                 updateClickerUI();
             }
