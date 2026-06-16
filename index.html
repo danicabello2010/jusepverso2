@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link class="icon.png" rel="icon" type="image/png" href="icon.png">
+    <link rel="icon" type="image/png" href="icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Jusep Verso 2</title>
@@ -134,7 +134,7 @@
         .dropdown-info { font-size: 13px; color: var(--text-muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
         .dropdown-divider { height: 1px; background-color: rgba(255, 255, 255, 0.08); margin: 4px 0; }
 
-        /* SECCIONES INTERNAS MENU */
+        /* SECCIONES INTERNES MENU */
         .redeem-section { display: flex; flex-direction: column; gap: 6px; }
         .redeem-section label, .themes-section span { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
         .redeem-input-group { display: flex; gap: 6px; }
@@ -289,6 +289,8 @@
     <audio id="audioMango" src="./Jusep_data/Mango/mangolaugh.mp3"></audio>
     <audio id="audioNuget" src="./Jusep_data/Nuget/effect.mp3"></audio>
 
+    <audio id="giantClickAudio"></audio>
+
     <div class="sidebar">
         <div class="window-controls">
             <div class="more-container">
@@ -414,8 +416,7 @@
                 </div>
                 <div class="shop-item disabled" id="buy-farm" onclick="buyAsset('farm')">
                     <div class="item-info"><div class="item-name">Granja de Monos</div><div class="item-cost" id="cost-farm">Coste: 1100</div></div>
-                    <div class="item-count" id="count-farm">0</div>
-                </div>
+                    <div class="item-count" id="count-farm">0</div> </div>
                 <div class="shop-item disabled" id="buy-factory" onclick="buyAsset('factory')">
                     <div class="item-info"><div class="item-name">Fábrica BAQUE</div><div class="item-cost" id="cost-factory">Coste: 12000</div></div>
                     <div class="item-count" id="count-factory">0</div>
@@ -477,22 +478,9 @@
 
     </div>
 
-    <audio id="giantClickAudio"></audio>
-
     <script>
-        // =========================================================================
-        // 🎵 RUTA DEL SONIDO ÚNICAMENTE PARA EL JUSEP GIGANTE DEL CLICKER
-        // =========================================================================
         const RUTA_SONIDO_JUSEP_GIGANTE = "./Jusep_data/Jusep Clicker/click.mp3"; 
-
-        // =========================================================================
-        // 📄 RUTA DEL ARCHIVO TXT PARA LA SECCIÓN "PRIMERA BETA"
-        // =========================================================================
         const RUTA_TEXTO_BETA = "./cambios.txt";
-
-        // =========================================================================
-        // 📝 TEXTO DE RESPALDO (Por si falla el fetch local)
-        // =========================================================================
         const TEXTO_RESPALDO_BETA = "Cambios de la versión 2026.06.16:\n\n- Se ha configurado un sonido independiente exclusivamente para el Jusep Gigante del Clicker.\n- Se habilitó la carga dinámica de notas desde archivos externos.\n- Optimizaciones de estabilidad en la interfaz móvil.";
 
         const NUGET_PUBLICO = false;
@@ -538,11 +526,9 @@
         
         const navItems = document.querySelectorAll('.nav-item');
 
-        // ESTADO GLOBAL LIMPIO POR DEFECTO
+        // ESTADO GLOBAL
         let cookies = 0;
         let totalClicksHistoricos = 0; 
-        let currentTheme = 'defecto';
-        let nugetDesbloqueadoPorCodigo = false;
         let assets = {
             cursor: { count: 0, cost: 15, cps: 0.1 },
             grandma: { count: 0, cost: 100, cps: 1 },
@@ -550,9 +536,6 @@
             factory: { count: 0, cost: 12000, cps: 47 }
         };
         let currentUser = null;
-        
-        // CONTROL DE ASINCRONÍA RADICAL: Bloquea autoguardados mientras se inicializa Supabase
-        let cargandoDatosIniciales = true; 
 
         const sectionsData = {
             "inicio": { title: "Bienvenido a Jusep Verso", desc: "Explora la coleccion de Juseps" },
@@ -563,19 +546,6 @@
             "primer-lanzamiento": { title: "Cambios de la version", desc: "Cargando notas de la versión..." }
         };
 
-        function resetVariablesANul() {
-            cookies = 0;
-            totalClicksHistoricos = 0;
-            currentTheme = 'defecto';
-            nugetDesbloqueadoPorCodigo = false;
-            assets = {
-                cursor: { count: 0, cost: 15, cps: 0.1 },
-                grandma: { count: 0, cost: 100, cps: 1 },
-                farm: { count: 0, cost: 1100, cps: 8 },
-                factory: { count: 0, cost: 12000, cps: 47 }
-            };
-        }
-
         function showAchievementNotification(text) {
             const toast = document.getElementById('toast');
             toast.innerText = text; toast.style.display = 'block';
@@ -583,13 +553,13 @@
         }
 
         function verificarDesbloqueosYVisibilidad() {
-            const labelClicks = document.getElementById('ach-total-clicks-label');
-            if(labelClicks) labelClicks.innerText = `Clicks históricos totales: ${totalClicksHistoricos}`;
+            const label = document.getElementById('ach-total-clicks-label');
+            if(label) label.innerText = `Clicks históricos totales: ${totalClicksHistoricos}`;
 
             if (totalClicksHistoricos >= 100) {
                 if (document.getElementById('nav-esponja').classList.contains('locked')) {
                     document.getElementById('nav-esponja').classList.remove('locked');
-                    if (!cargandoDatosIniciales) showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Esponja (100 Clicks)");
+                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Esponja (100 Clicks)");
                 }
                 document.getElementById('card-ach-esponja').classList.add('unlocked-card');
                 document.getElementById('desc-ach-esponja').innerText = "¡Completado! Jusep Esponja desbloqueado.";
@@ -606,7 +576,7 @@
             if (totalClicksHistoricos >= 200) {
                 if (document.getElementById('nav-estrella').classList.contains('locked')) {
                     document.getElementById('nav-estrella').classList.remove('locked');
-                    if (!cargandoDatosIniciales) showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Estrella (200 Clicks)");
+                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Estrella (200 Clicks)");
                 }
                 document.getElementById('card-ach-estrella').classList.add('unlocked-card');
                 document.getElementById('desc-ach-estrella').innerText = "¡Completado! Jusep Estrella desbloqueado.";
@@ -623,7 +593,7 @@
             if (totalClicksHistoricos >= 300) {
                 if (document.getElementById('nav-mango').classList.contains('locked')) {
                     document.getElementById('nav-mango').classList.remove('locked');
-                    if (!cargandoDatosIniciales) showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Mango (300 Clicks)");
+                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Mango (300 Clicks)");
                 }
                 document.getElementById('card-ach-mango').classList.add('unlocked-card');
                 document.getElementById('desc-ach-mango').innerText = "¡Completado! Jusep Mango desbloqueado.";
@@ -637,10 +607,11 @@
                 document.getElementById('badge-ach-mango').innerText = "Bloqueado 🔒";
             }
 
-            if (totalClicksHistoricos >= 400 || NUGET_PUBLICO || nugetDesbloqueadoPorCodigo) {
+            const haSidoDesbloqueadoPorCodigo = localStorage.getItem('jusep_nuget_desbloqueado') === 'true';
+            if (totalClicksHistoricos >= 400 || NUGET_PUBLICO || haSidoDesbloqueadoPorCodigo) {
                 if (document.getElementById('nav-nuget').classList.contains('locked')) {
                     document.getElementById('nav-nuget').classList.remove('locked');
-                    if (!cargandoDatosIniciales) showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Nuget (400 Clicks)");
+                    showAchievementNotification("🏆 ¡Logro! Desbloqueaste a Jusep Nuget (400 Clicks)");
                 }
                 document.getElementById('card-ach-nuget').classList.add('unlocked-card');
                 document.getElementById('desc-ach-nuget').innerText = "¡Completado! Jusep Nuget desbloqueado.";
@@ -657,48 +628,38 @@
         }
 
         async function guardarProgresoEnCuenta() {
-            if (cargandoDatosIniciales || !currentUser || !_supabase) return;
-
+            if (!currentUser) {
+                localStorage.setItem('jusep_local_cookies', cookies);
+                localStorage.setItem('jusep_local_clicks_historicos', totalClicksHistoricos);
+                localStorage.setItem('jusep_local_assets', JSON.stringify(assets));
+                return;
+            }
+            if (!_supabase) return;
             try {
                 await _supabase.from('user_preferences').upsert({ 
-                    user_id: currentUser.id, 
-                    cookies_count: Math.floor(cookies),
-                    total_clicks: totalClicksHistoricos, 
-                    assets_json: JSON.stringify(assets),
-                    theme: currentTheme,
-                    nuget_code_unlocked: nugetDesbloqueadoPorCodigo
+                    user_id: currentUser.id, cookies_count: Math.floor(cookies),
+                    total_clicks: totalClicksHistoricos, assets_json: JSON.stringify(assets)
                 }, { onConflict: 'user_id' });
-            } catch (err) { console.error("Error guardando en Supabase:", err); }
+            } catch(e) { console.error("Error al guardar en Supabase:", e); }
         }
 
         async function cargarProgresoDeCuenta(userId) {
             if (!_supabase) return;
-            
             try {
-                const { data } = await _supabase.from('user_preferences').select('cookies_count, total_clicks, assets_json, theme, nuget_code_unlocked').eq('user_id', userId).single();
-                
+                const { data } = await _supabase.from('user_preferences').select('cookies_count, total_clicks, assets_json').eq('user_id', userId).single();
                 if (data) {
-                    cookies = parseFloat(data.cookies_count) || 0;
-                    totalClicksHistoricos = parseInt(data.total_clicks) || 0;
-                    currentTheme = data.theme || 'defecto';
-                    nugetDesbloqueadoPorCodigo = data.nuget_code_unlocked || false;
-                    
-                    if (data.assets_json) {
-                        try { assets = JSON.parse(data.assets_json); } catch(e) { console.error("Assets JSON corrupto", e); }
-                    }
+                    cookies = data.cookies_count || 0; totalClicksHistoricos = data.total_clicks || 0;
+                    if (data.assets_json) assets = JSON.parse(data.assets_json);
                 } else {
-                    resetVariablesANul();
+                    cookies = parseFloat(localStorage.getItem('jusep_local_cookies')) || 0;
+                    totalClicksHistoricos = parseInt(localStorage.getItem('jusep_local_clicks_historicos')) || 0;
+                    const localAssets = localStorage.getItem('jusep_local_assets');
+                    if (localAssets) assets = JSON.parse(localAssets);
                 }
-            } catch (err) {
-                console.error("Error al descargar progreso remoto:", err);
-            }
-            
-            setTemaVisual(currentTheme);
-            verificarDesbloqueosYVisibilidad(); 
-            updateClickerUI();
+            } catch(e) { console.error(e); }
+            verificarDesbloqueosYVisibilidad(); updateClickerUI();
         }
 
-        // Clicks en imágenes de la galería
         jusepImgElement.addEventListener('click', () => { audioJusep.currentTime = 0; audioJusep.play().catch(e=>0); });
         jusepEsponjaImg.addEventListener('click', () => { audioEsponja.currentTime = 0; audioEsponja.play().catch(e=>0); });
         jusepEstrellaImg.addEventListener('click', () => { audioEstrella.currentTime = 0; audioEstrella.play().catch(e=>0); });
@@ -754,6 +715,7 @@
                             .then(text => { contentDesc.innerText = text; })
                             .catch(err => {
                                 contentDesc.innerText = TEXTO_RESPALDO_BETA;
+                                console.log("Cargando texto alternativo por fallo de archivo:", err);
                             });
                     }
                 }
@@ -761,12 +723,12 @@
             });
         });
 
-        // CLICKER
         const giantJusep = document.getElementById('giantJusep');
         giantJusep.addEventListener('click', () => {
-            if (cargandoDatosIniciales) return;
             cookies += 1; totalClicksHistoricos += 1;
-            giantClickAudio.currentTime = 0; giantClickAudio.play().catch(e => 0);
+            
+            giantClickAudio.currentTime = 0;
+            giantClickAudio.play().catch(e => 0);
             
             verificarDesbloqueosYVisibilidad();
             updateClickerUI();
@@ -780,7 +742,6 @@
         }
 
         function buyAsset(key) {
-            if (cargandoDatosIniciales) return;
             let asset = assets[key];
             if (cookies >= asset.cost) {
                 cookies -= asset.cost; asset.count++;
@@ -790,28 +751,34 @@
         }
 
         function updateClickerUI() {
-            document.getElementById('cookieCount').innerText = Math.floor(cookies) + " Jusep Cookies";
-            document.getElementById('cpsCount').innerText = "por segundo: " + getCalculatedCPS().toFixed(1);
+            const cookieEl = document.getElementById('cookieCount');
+            const cpsEl = document.getElementById('cpsCount');
+            if(cookieEl) cookieEl.innerText = Math.floor(cookies) + " Jusep Cookies";
+            if(cpsEl) cpsEl.innerText = "por segundo: " + getCalculatedCPS().toFixed(1);
             
             for (let key in assets) {
-                document.getElementById(`cost-${key}`).innerText = "Coste: " + assets[key].cost;
-                document.getElementById(`count-${key}`).innerText = assets[key].count;
-                let element = document.getElementById(`buy-${key}`);
-                if (cookies >= assets[key].cost) element.classList.remove('disabled');
-                else element.classList.add('disabled');
+                const costEl = document.getElementById(`cost-${key}`);
+                const countEl = document.getElementById(`count-${key}`);
+                const itemEl = document.getElementById(`buy-${key}`);
+                
+                if(costEl) costEl.innerText = "Coste: " + assets[key].cost;
+                if(countEl) countEl.innerText = assets[key].count;
+                
+                if (itemEl) {
+                    if (cookies >= assets[key].cost) itemEl.classList.remove('disabled');
+                    else itemEl.classList.add('disabled');
+                }
             }
         }
 
         setInterval(() => {
-            if (cargandoDatosIniciales) return;
             if (getCalculatedCPS() > 0) {
                 cookies += getCalculatedCPS() / 10;
                 if (document.getElementById('clickerGame').style.display === "flex") { updateClickerUI(); }
             }
         }, 100);
 
-        // Guardado periódico automático a la nube únicamente si no está cargando
-        setInterval(() => { guardarProgresoEnCuenta(); }, 8000);
+        setInterval(() => { guardarProgresoEnCuenta(); }, 10000);
 
         profileBtn.addEventListener('click', (e) => { e.stopPropagation(); moreDropdown.classList.remove('show'); profileDropdown.classList.toggle('show'); });
         moreBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.classList.remove('show'); moreDropdown.classList.toggle('show'); });
@@ -829,25 +796,14 @@
             await _supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.href } });
         });
 
-        logoutBtn.addEventListener('click', async () => { 
-            if (_supabase) await _supabase.auth.signOut(); 
-            updateUI(null); 
-        });
+        logoutBtn.addEventListener('click', async () => { if (_supabase) await _supabase.auth.signOut(); updateUI(null); });
 
         redeemBtn.addEventListener('click', async () => {
             const code = giftCodeInput.value.trim();
             if (code === "NugetBAQUE?") {
-                nugetDesbloqueadoPorCodigo = true;
+                localStorage.setItem('jusep_nuget_desbloqueado', 'true');
                 verificarDesbloqueosYVisibilidad();
                 alert("¡Felicidades! Has desbloqueado permanentemente a Jusep Nuget 👀🍗");
-                giftCodeInput.value = "";
-                guardarProgresoEnCuenta();
-            } else if (code === "MILLONBAQUE") {
-                cookies += 1000000;
-                totalClicksHistoricos += 1000000;
-                verificarDesbloqueosYVisibilidad();
-                updateClickerUI();
-                alert("¡Código brutal canjeado! Has recibido 1,000,000 de clicks y cookies 🏆");
                 giftCodeInput.value = "";
                 guardarProgresoEnCuenta();
             }
@@ -862,54 +818,51 @@
 
         themeButtons.forEach(btn => {
             btn.addEventListener('click', async () => {
-                if (cargandoDatosIniciales) return;
                 const selectedTheme = btn.getAttribute('data-theme');
-                currentTheme = selectedTheme;
                 setTemaVisual(selectedTheme);
-                guardarProgresoEnCuenta();
+                if (!currentUser) { localStorage.setItem('jusep_local_theme', selectedTheme); return; }
+                try {
+                    await _supabase.from('user_preferences').upsert({ user_id: currentUser.id, theme: selectedTheme }, { onConflict: 'user_id' });
+                } catch(e) { console.error(e); }
             });
         });
 
-        async function updateUI(user) {
+        async function cargarTemaGuardado(userId) {
+            if (!_supabase) return;
+            try {
+                const { data } = await _supabase.from('user_preferences').select('theme').eq('user_id', userId).single();
+                if (data && data.theme) setTemaVisual(data.theme);
+                else setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
+            } catch(e) { console.error(e); }
+        }
+
+        function updateUI(user) {
             currentUser = user;
             if (user) {
-                // Bloqueamos el guardado automático para evitar sobrescrituras accidentales
-                cargandoDatosIniciales = true; 
-                
                 const avatarUrl = user.user_metadata.avatar_url;
                 const name = user.user_metadata.full_name || user.user_metadata.user_name;
                 avatarImage.src = avatarUrl; avatarImage.style.display = 'block'; avatarDefault.style.display = 'none';
                 profileBtn.classList.add('connected'); dropdownStatus.innerText = `${name}`;
                 loginBtn.style.display = 'none'; logoutBtn.style.display = 'block';
-                
-                // Forzar descarga de datos y temas desde Supabase de forma limpia y síncrona
-                await cargarProgresoDeCuenta(user.id); 
-                
-                // Una vez los datos están listos y asignados, habilitamos las interacciones de guardado
-                cargandoDatosIniciales = false; 
+                cargarProgresoDeCuenta(user.id); cargarTemaGuardado(user.id);
             } else {
-                // Modo anónimo o desvinculado
-                cargandoDatosIniciales = true;
                 avatarImage.src = ''; avatarImage.style.display = 'none'; avatarDefault.style.display = 'block';
                 profileBtn.classList.remove('connected'); dropdownStatus.innerText = "Cuenta no conectada";
                 loginBtn.style.display = 'flex'; logoutBtn.style.display = 'none';
                 
-                resetVariablesANul();
-                setTemaVisual('defecto');
-                verificarDesbloqueosYVisibilidad(); 
-                updateClickerUI();
-                cargandoDatosIniciales = false;
+                cookies = parseFloat(localStorage.getItem('jusep_local_cookies')) || 0;
+                totalClicksHistoricos = parseInt(localStorage.getItem('jusep_local_clicks_historicos')) || 0;
+                const localAssets = localStorage.getItem('jusep_local_assets');
+                if (localAssets) assets = JSON.parse(localAssets);
+
+                setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
+                verificarDesbloqueosYVisibilidad(); updateClickerUI();
             }
         }
 
-        // CONTROLADOR INICIAL SANEADO
         if (_supabase) {
             _supabase.auth.onAuthStateChange((event, session) => {
-                if (session && session.user) {
-                    updateUI(session.user); 
-                } else { 
-                    updateUI(null); 
-                }
+                if (session) updateUI(session.user); else updateUI(null);
             });
         } else {
             updateUI(null);
