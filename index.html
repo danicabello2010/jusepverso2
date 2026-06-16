@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <link rel="icon" type="image/png" href="icon.png">
+    <link class="icon.png" rel="icon" type="image/png" href="icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jusep Verso 2
-    </title>
+    <title>Jusep Verso 2</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* Paletas con Estilo Material Design 3 Expressive */
@@ -417,7 +416,7 @@
                 </div>
                 <div class="shop-item disabled" id="buy-farm" onclick="buyAsset('farm')">
                     <div class="item-info"><div class="item-name">Granja de Monos</div><div class="item-cost" id="cost-farm">Coste: 1100</div></div>
-                    <div class="item-count" id="count-grandma">0</div>
+                    <div class="item-count" id="count-farm">0</div>
                 </div>
                 <div class="shop-item disabled" id="buy-factory" onclick="buyAsset('factory')">
                     <div class="item-info"><div class="item-name">Fábrica BAQUE</div><div class="item-cost" id="cost-factory">Coste: 12000</div></div>
@@ -868,7 +867,7 @@
             else setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
         }
 
-        function updateUI(user) {
+        async function updateUI(user) {
             currentUser = user;
             if (user) {
                 const avatarUrl = user.user_metadata.avatar_url;
@@ -876,7 +875,10 @@
                 avatarImage.src = avatarUrl; avatarImage.style.display = 'block'; avatarDefault.style.display = 'none';
                 profileBtn.classList.add('connected'); dropdownStatus.innerText = `${name}`;
                 loginBtn.style.display = 'none'; logoutBtn.style.display = 'block';
-                cargarProgresoDeCuenta(user.id); cargarTemaGuardado(user.id);
+                
+                // Esperamos de forma asíncrona a que los datos se descarguen completamente de Supabase
+                await cargarProgresoDeCuenta(user.id); 
+                await cargarTemaGuardado(user.id);
             } else {
                 avatarImage.src = ''; avatarImage.style.display = 'none'; avatarDefault.style.display = 'block';
                 profileBtn.classList.remove('connected'); dropdownStatus.innerText = "Cuenta no conectada";
@@ -888,7 +890,8 @@
                 if (localAssets) assets = JSON.parse(localAssets);
 
                 setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
-                verificarDesbloqueosYVisibilidad(); updateClickerUI();
+                verificarDesbloqueosYVisibilidad(); 
+                updateClickerUI();
             }
         }
 
