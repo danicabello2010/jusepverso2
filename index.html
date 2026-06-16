@@ -130,7 +130,7 @@
             padding: 0 20px;
         }
 
-        /* IMAGENES ABSOLUTAS: Ocupan todo el espacio disponible de borde a borde */
+        /* IMAGENES ABSOLUTAS */
         .jusep-image {
             position: absolute;
             top: 0;
@@ -151,7 +151,6 @@
             padding-right: 4px;
         }
 
-        /* CONTENEDORES RELATIVOS PARA MENÚS DESPLEGABLES */
         .more-container, .profile-container {
             position: relative;
         }
@@ -193,7 +192,6 @@
             display: none;
         }
 
-        /* DROPDOWNS: DISEÑO COMÚN */
         .profile-dropdown, .more-dropdown {
             position: absolute;
             top: 38px;
@@ -239,7 +237,6 @@
             margin: 4px 0;
         }
 
-        /* SECCIÓN DEL INTERIOR DE CANJEAR CÓDIGO */
         .redeem-section {
             display: flex;
             flex-direction: column;
@@ -289,7 +286,6 @@
             background-color: #2c974b;
         }
 
-        /* SECCIÓN DEL INTERIOR DE TEMAS */
         .themes-section {
             display: flex;
             flex-direction: column;
@@ -335,7 +331,6 @@
             box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
         }
 
-        /* Colores sutiles indicadores para los botones de temas */
         .btn-theme-select[data-theme="rojo"] { border-left: 4px solid #ffb4ab; }
         .btn-theme-select[data-theme="naranja"] { border-left: 4px solid #ffb776; }
         .btn-theme-select[data-theme="amarillo"] { border-left: 4px solid #e5c36c; }
@@ -392,9 +387,7 @@
             transition: background-color 0.2s;
         }
 
-        .btn-more svg {
-            fill: var(--text-color);
-        }
+        .btn-more svg { fill: var(--text-color); }
 
         .nav-item {
             display: flex;
@@ -410,37 +403,12 @@
             transition: background 0.2s, color 0.2s;
         }
 
-        .nav-item:hover {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
+        .nav-item:hover { background-color: rgba(255, 255, 255, 0.05); }
+        .nav-item.active { background-color: var(--active-bg); color: var(--text-color); font-weight: 500; }
 
-        .nav-item.active {
-            background-color: var(--active-bg);
-            color: var(--text-color);
-            font-weight: 500;
-        }
-
-        .nav-icon-square {
-            width: 24px;
-            height: 24px;
-            object-fit: cover;
-            flex-shrink: 0;
-            border-radius: 0; 
-            border: none;       
-        }
-
-        .nav-item svg {
-            width: 24px;
-            height: 24px;
-            flex-shrink: 0;
-        }
-
-        .nav-item .icon-blue {
-            color: var(--active-icon);
-            fill: none;
-            stroke: currentColor;
-            stroke-width: 2;
-        }
+        .nav-icon-square { width: 24px; height: 24px; object-fit: cover; flex-shrink: 0; }
+        .nav-item svg { width: 24px; height: 24px; flex-shrink: 0; }
+        .nav-item .icon-blue { color: var(--active-icon); fill: none; stroke: currentColor; stroke-width: 2; }
 
         .section-header {
             display: flex;
@@ -453,16 +421,9 @@
             margin-top: 10px;
         }
 
-        .section-header svg {
-            width: 14px;
-            height: 14px;
-            fill: currentColor;
-        }
+        .section-header svg { width: 14px; height: 14px; fill: currentColor; }
 
-        /* Jusep Nuget oculto por defecto en CSS */
-        #nav-nuget {
-            display: none;
-        }
+        #nav-nuget { display: none; }
     </style>
 </head>
 <body>
@@ -614,18 +575,11 @@
     </div>
 
     <script>
-        // =========================================================================
-        // INTERRUPTOR DE ACCESIBILIDAD FUTURA (Hacer público a Jusep Nuget)
-        // Cambia esto a `true` cuando quieras que aparezca para todo el mundo sin restricciones
         const NUGET_PUBLICO = false; 
-        // =========================================================================
 
-        // === COLOCA TUS DATOS DE SUPABASE AQUÍ ===
         const SUPABASE_URL = "https://fimkpoqhzwruxhpsavhc.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_TTXdlD8qqhYbBtLdSaWxqA_Ca_Uip7u"; 
-        // ========================================
 
-        // Elementos antiguos
         const profileBtn = document.getElementById('profileBtn');
         const profileDropdown = document.getElementById('profileDropdown');
         const loginBtn = document.getElementById('loginBtn');
@@ -634,7 +588,6 @@
         const avatarImage = document.getElementById('avatarImage');
         const dropdownStatus = document.getElementById('dropdownStatus');
 
-        // Elementos del menú "..."
         const moreBtn = document.getElementById('moreBtn');
         const moreDropdown = document.getElementById('moreDropdown');
         const giftCodeInput = document.getElementById('giftCode');
@@ -665,47 +618,29 @@
         const navItems = document.querySelectorAll('.nav-item');
         const navNuget = document.getElementById('nav-nuget'); 
 
-        // Variable global del usuario actual
         let currentUser = null;
 
         const sectionsData = {
-            "inicio": {
-                title: "Bienvenido al Jusep Verso",
-                desc: "Selecciona una opción del menú de la barra lateral para ver su contenido."
-            },
+            "inicio": { title: "Bienvenido a Jusep Verso", desc: "Explora la coleccion de Juseps" },
             "jusep": { title: "", desc: "" },
             "jusep-esponja": { title: "", desc: "" },
             "jusep-estrella": { title: "", desc: "" },
             "jusep-mango": { title: "", desc: "" },
             "jusep-nuget": { title: "", desc: "" }, 
-            "jusep-clicker": {
-                title: "Jusep Clicker 🍪👀",
-                desc: "Muy Pronto, ¿Codigo BAQUE? ... > Canjear codigo"
-            },
-            "jusep-rpg": {
-                title: "Jusep RPG 🦴🔵👀",
-                desc: "EN DESAROLLO, POSIBLE LANZAMIENTO 2027"
-            },
-            "primer-lanzamiento": {
-                title: "Cambios de la version 2026.06.16",
-                desc: "Se añadio un nuevo Jusep (JUSEP MANGO), se agrego un sistema de cuentas, tambien se agregaron dos espacios para futuros juegos, temas y codigos BAQUE"
-            }
+            "jusep-clicker": { title: "Jusep Clicker 🍪👀", desc: "Muy Pronto, ¿Codigo BAQUE? ... > Canjear codigo" },
+            "jusep-rpg": { title: "Jusep RPG 🦴🔵👀", desc: "EN DESAROLLO, POSIBLE LANZAMIENTO 2027" },
+            "primer-lanzamiento": { title: "Cambios de la version 2026.06.16", desc: "Se añadio un nuevo Jusep (JUSEP MANGO), se agrego un sistema de cuentas, tambien se agregaron dos espacios para futuros juegos, temas y codigos BAQUE" }
         };
 
-        // --- CONTROL EXTRICTO DE VISIBILIDAD DE JUSEP NUGET ---
         function verificarVisibilidadNuget() {
-            // Condición futura global libre
             if (NUGET_PUBLICO) {
                 navNuget.style.display = "flex";
                 return;
             }
-
-            // Condición actual: Debe estar logueado Y haber canjeado el código en este navegador
             const haSidoDesbloqueado = localStorage.getItem('jusep_nuget_desbloqueado') === 'true';
             if (currentUser && haSidoDesbloqueado) {
                 navNuget.style.display = "flex";
             } else {
-                // Si cambia de pestaña a Nuget y se desloguea, lo devuelve a inicio
                 if (navNuget.classList.contains('active')) {
                     document.querySelector('[data-section="inicio"]').click();
                 }
@@ -713,54 +648,27 @@
             }
         }
 
-        // --- MANEJO DE REPRODUCCIONES DE AUDIO ---
-        jusepImgElement.addEventListener('click', () => {
-            clickSound.currentTime = 0;
-            clickSound.play().catch(err => console.log(err));
-        });
-
-        jusepEsponjaImg.addEventListener('click', () => {
-            clickEsponjaSound.currentTime = 0;
-            clickEsponjaSound.play().catch(err => console.log(err));
-        });
-
-        jusepEstrellaImg.addEventListener('click', () => {
-            clickEstrellaSound.currentTime = 0;
-            clickEstrellaSound.play().catch(err => console.log(err));
-        });
-
-        jusepMangoImg.addEventListener('click', () => {
-            clickMangoSound.currentTime = 0;
-            clickMangoSound.play().catch(err => console.log(err));
-        });
-
-        jusepNugetImg.addEventListener('click', () => {
-            clickNugetSound.currentTime = 0;
-            clickNugetSound.play().catch(err => console.log(err));
-        });
+        // --- REPRODUCCIÓN AUDIO ---
+        jusepImgElement.addEventListener('click', () => { clickSound.currentTime = 0; clickSound.play().catch(e=>0); });
+        jusepEsponjaImg.addEventListener('click', () => { clickEsponjaSound.currentTime = 0; clickEsponjaSound.play().catch(e=>0); });
+        jusepEstrellaImg.addEventListener('click', () => { clickEstrellaSound.currentTime = 0; clickEstrellaSound.play().catch(e=>0); });
+        jusepMangoImg.addEventListener('click', () => { clickMangoSound.currentTime = 0; clickMangoSound.play().catch(e=>0); });
+        jusepNugetImg.addEventListener('click', () => { clickNugetSound.currentTime = 0; clickNugetSound.play().catch(e=>0); });
 
         function hideAllImages() {
-            jusepImgElement.style.display = "none";
-            jusepEsponjaImg.style.display = "none";
-            jusepEstrellaImg.style.display = "none";
-            jusepMangoImg.style.display = "none";
+            jusepImgElement.style.display = "none"; jusepEsponjaImg.style.display = "none";
+            jusepEstrellaImg.style.display = "none"; jusepMangoImg.style.display = "none";
             jusepNugetImg.style.display = "none";
         }
 
         function pauseAllBackgroundMusic() {
-            bgMusic.pause();
-            bgEsponjaMusic.pause();
-            bgEstrellaMusic.pause();
-            bgMangoMusic.pause();
-            bgNugetMusic.pause();
+            bgMusic.pause(); bgEsponjaMusic.pause(); bgEstrellaMusic.pause(); bgMangoMusic.pause(); bgNugetMusic.pause();
         }
 
-        // Intercambio de navegación de pestañas
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 navItems.forEach(nav => nav.classList.remove('active'));
                 item.classList.add('active');
-
                 const targetKey = item.getAttribute('data-section');
                 
                 if (sectionsData[targetKey]) {
@@ -768,156 +676,118 @@
                     contentDesc.innerText = sectionsData[targetKey].desc;
                 }
 
-                contentTitle.style.display = "none"; 
-                contentDesc.style.display = "none";  
-                hideAllImages();
-                pauseAllBackgroundMusic();
+                contentTitle.style.display = "none"; contentDesc.style.display = "none";  
+                hideAllImages(); pauseAllBackgroundMusic();
 
-                if (targetKey === "inicio") {
-                    contentTitle.style.display = "block"; 
-                    contentDesc.style.display = "block";
-                }
-                else if (targetKey === "jusep") {
-                    jusepImgElement.style.display = "block"; 
-                    bgMusic.play().catch(err => console.log(err));
-                } 
-                else if (targetKey === "jusep-esponja") {
-                    jusepEsponjaImg.style.display = "block";
-                    bgEsponjaMusic.play().catch(err => console.log(err));
-                } 
-                else if (targetKey === "jusep-estrella") {
-                    jusepEstrellaImg.style.display = "block";
-                    bgEstrellaMusic.play().catch(err => console.log(err));
-                } 
-                else if (targetKey === "jusep-mango") {
-                    jusepMangoImg.style.display = "block";
-                    bgMangoMusic.play().catch(err => console.log(err));
-                } 
-                else if (targetKey === "jusep-nuget") {
-                    jusepNugetImg.style.display = "block";
-                    bgNugetMusic.play().catch(err => console.log(err));
-                }
-                else {
-                    contentTitle.style.display = "block"; 
-                    contentDesc.style.display = "block";
-                }
+                if (targetKey === "inicio") { contentTitle.style.display = "block"; contentDesc.style.display = "block"; }
+                else if (targetKey === "jusep") { jusepImgElement.style.display = "block"; bgMusic.play().catch(e=>0); } 
+                else if (targetKey === "jusep-esponja") { jusepEsponjaImg.style.display = "block"; bgEsponjaMusic.play().catch(e=>0); } 
+                else if (targetKey === "jusep-estrella") { jusepEstrellaImg.style.display = "block"; bgEstrellaMusic.play().catch(e=>0); } 
+                else if (targetKey === "jusep-mango") { jusepMangoImg.style.display = "block"; bgMangoMusic.play().catch(e=>0); } 
+                else if (targetKey === "jusep-nuget") { jusepNugetImg.style.display = "block"; bgNugetMusic.play().catch(e=>0); }
+                else { contentTitle.style.display = "block"; contentDesc.style.display = "block"; }
             });
         });
 
-        const activeItem = document.querySelector('.nav-item.active');
-        if(activeItem && activeItem.getAttribute('data-section') === 'inicio') {
-            contentTitle.style.display = "block";
-            contentDesc.style.display = "block";
-            hideAllImages();
-        }
-
-        // --- MANEJO DE MENÚS DESPLEGABLES ---
-        profileBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            moreDropdown.classList.remove('show');
-            profileDropdown.classList.toggle('show');
-        });
-
-        moreBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
-            profileDropdown.classList.remove('show');
-            moreDropdown.classList.toggle('show');
-        });
-
-        document.addEventListener('click', () => {
-            profileDropdown.classList.remove('show');
-            moreDropdown.classList.remove('show');
-        });
-
+        // --- MENÚS DROPDOWN ---
+        profileBtn.addEventListener('click', (e) => { e.stopPropagation(); moreDropdown.classList.remove('show'); profileDropdown.classList.toggle('show'); });
+        moreBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.classList.remove('show'); moreDropdown.classList.toggle('show'); });
+        document.addEventListener('click', () => { profileDropdown.classList.remove('show'); moreDropdown.classList.remove('show'); });
         profileDropdown.addEventListener('click', (e) => e.stopPropagation());
         moreDropdown.addEventListener('click', (e) => e.stopPropagation());
 
-
-        // --- CONEXIÓN DE SUPABASE ---
+        // --- SUPABASE CLIENT ---
         let _supabase = null;
-        try {
-            if (SUPABASE_URL && SUPABASE_ANON_KEY) {
-                _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-            }
-        } catch (err) {
-            console.error(err);
-        }
+        try { if (SUPABASE_URL && SUPABASE_ANON_KEY) _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (err) { console.error(err); }
 
         loginBtn.addEventListener('click', async () => {
-            if (!_supabase) {
-                alert("Primero debes configurar tus claves válidas de Supabase.");
-                return;
-            }
+            if (!_supabase) { alert("Configura tus claves válidas de Supabase."); return; }
             dropdownStatus.innerText = "Abriendo GitHub...";
-            const { error } = await _supabase.auth.signInWithOAuth({
-                provider: 'github',
-                options: { redirectTo: window.location.href }
-            });
-            if (error) {
-                alert("Error de conexión: " + error.message);
-                dropdownStatus.innerText = "Cuenta no conectada";
-            }
+            await _supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.href } });
         });
 
-        logoutBtn.addEventListener('click', async () => {
-            if (_supabase) await _supabase.auth.signOut();
-            updateUI(null);
-        });
+        logoutBtn.addEventListener('click', async () => { if (_supabase) await _supabase.auth.signOut(); updateUI(null); });
 
-        // Lógica de canjeo de códigos vinculados
         redeemBtn.addEventListener('click', async () => {
             const code = giftCodeInput.value.trim();
-            if (!code) {
-                alert("Por favor, escribe un código.");
-                return;
-            }
+            if (!code) { alert("Por favor, escribe un código."); return; }
 
-            // Canjeo del código condicional de Nuget
             if (code === "NugetBAQUE?") {
-                if (!currentUser) {
-                    alert("¡Error! Debes conectar tu cuenta primero para poder canjear códigos especiales.");
-                    return;
-                }
+                if (!currentUser) { alert("¡Error! Debes conectar tu cuenta primero para poder canjear códigos especiales."); return; }
                 localStorage.setItem('jusep_nuget_desbloqueado', 'true');
                 verificarVisibilidadNuget();
                 alert("¡Felicidades! Has desbloqueado permanentemente a Jusep Nuget 👀🍗");
                 giftCodeInput.value = "";
                 return;
             }
-
-            if (!currentUser) {
-                alert("¡Debes conectar tu cuenta de GitHub primero para guardar la tarjeta de regalo de manera persistente!");
-                return;
-            }
-            alert(`Enviando tarjeta regalo: "${code}" para la cuenta vinculada con ID: ${currentUser.id}. (Listo para guardar en la tabla Supabase)`);
+            if (!currentUser) { alert("¡Conecta tu cuenta primero!"); return; }
+            alert(`Código enviado: "${code}"`);
             giftCodeInput.value = "";
         });
 
-        // --- LÓGICA DE TEMAS ---
+        // --- LÓGICA DE TEMAS VISUALES ---
+        function setTemaVisual(themeName) {
+            document.body.className = '';
+            themeButtons.forEach(b => b.classList.remove('active-theme'));
+            if (themeName !== 'defecto') {
+                document.body.classList.add(`theme-${themeName}`);
+            }
+            const activeBtn = document.querySelector(`.btn-theme-select[data-theme="${themeName}"]`);
+            if (activeBtn) activeBtn.classList.add('active-theme');
+        }
+
+        // --- CAMBIAR Y GUARDAR TEMA EN LA CUENTA VINCULADA ---
         themeButtons.forEach(btn => {
             btn.addEventListener('click', async () => {
                 const selectedTheme = btn.getAttribute('data-theme');
-                
-                themeButtons.forEach(b => b.classList.remove('active-theme'));
-                btn.classList.add('active-theme');
-
-                document.body.className = '';
-                if (selectedTheme !== 'defecto') {
-                    document.body.classList.add(`theme-${selectedTheme}`);
-                }
+                setTemaVisual(selectedTheme);
 
                 if (!currentUser) {
                     localStorage.setItem('jusep_local_theme', selectedTheme);
                     return;
                 }
+
+                if (!_supabase) return;
+
+                // Guardado real en Supabase mediante upsert
+                const { error } = await _supabase
+                    .from('user_preferences')
+                    .upsert({ user_id: currentUser.id, theme: selectedTheme }, { onConflict: 'user_id' });
+
+                if (error) {
+                    console.error("Error guardando el tema en la nube:", error.message);
+                } else {
+                    console.log(`Tema "${selectedTheme}" guardado en tu cuenta vinculada.`);
+                }
             });
         });
 
+        // --- CARGAR TEMA DESDE LA CUENTA VINCULADA ---
+        async function cargarTemaGuardado(userId) {
+            if (!_supabase) return;
+
+            const { data, error } = await _supabase
+                .from('user_preferences')
+                .select('theme')
+                .eq('user_id', userId)
+                .single();
+
+            if (error && error.code !== 'PGRST116') { // Ignorar error de fila no encontrada
+                console.error("Error cargando tema de la nube:", error.message);
+                return;
+            }
+
+            if (data && data.theme) {
+                setTemaVisual(data.theme);
+            } else {
+                // Si está conectado pero no tiene fila guardada, aplicar el predeterminado o local
+                const localTheme = localStorage.getItem('jusep_local_theme') || 'defecto';
+                setTemaVisual(localTheme);
+            }
+        }
 
         function updateUI(user) {
             currentUser = user;
-
-            // Cada vez que cambia el estado del usuario, recalculamos si debe ver a Jusep Nuget
             verificarVisibilidadNuget();
 
             if (user) {
@@ -931,6 +801,9 @@
                 dropdownStatus.innerText = `Conectado: ${name}`;
                 loginBtn.style.display = 'none';
                 logoutBtn.style.display = 'block';
+
+                // Llamar a la carga remota al iniciar sesión
+                cargarTemaGuardado(user.id);
             } else {
                 avatarImage.src = '';
                 avatarImage.style.display = 'none';
@@ -940,14 +813,9 @@
                 loginBtn.style.display = 'flex';
                 logoutBtn.style.display = 'none';
 
+                // Restaurar de manera local
                 const localTheme = localStorage.getItem('jusep_local_theme') || 'defecto';
-                document.body.className = '';
-                themeButtons.forEach(b => b.classList.remove('active-theme'));
-                if (localTheme !== 'defecto') {
-                    document.body.classList.add(`theme-${localTheme}`);
-                }
-                const activeBtn = document.querySelector(`.btn-theme-select[data-theme="${localTheme}"]`);
-                if (activeBtn) activeBtn.classList.add('active-theme');
+                setTemaVisual(localTheme);
             }
         }
 
@@ -958,9 +826,7 @@
             });
         } else {
             const localTheme = localStorage.getItem('jusep_local_theme') || 'defecto';
-            if (localTheme !== 'defecto') document.body.classList.add(`theme-${localTheme}`);
-            const activeBtn = document.querySelector(`.btn-theme-select[data-theme="${localTheme}"]`);
-            if (activeBtn) activeBtn.classList.add('active-theme');
+            setTemaVisual(localTheme);
             verificarVisibilidadNuget();
         }
     </script>
