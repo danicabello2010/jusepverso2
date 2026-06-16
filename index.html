@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Jusep Verso 2</title>
+    <title>Jusep Verso 2 - Mobile Edition</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        /* Paletas con Estilo Material Design 3 Expressive (Tonos vibrantes y fondos profundos armónicos) */
+        /* Paletas con Estilo Material Design 3 Expressive */
         :root {
             --bg-color: #12181f;
             --text-color: #f1f2f4;
@@ -17,73 +17,44 @@
             --font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
         }
 
-        /* Temas Material 3 Expressive aplicados mediante clases en el elemento body */
         body.theme-rojo {
-            --bg-color: #201010;
-            --main-bg: #140b0b;
-            --text-color: #ffdad9;
-            --text-muted: #dcbebd;
-            --active-bg: #442222;
-            --active-icon: #ffb4ab;
+            --bg-color: #201010; --main-bg: #140b0b; --text-color: #ffdad9;
+            --text-muted: #dcbebd; --active-bg: #442222; --active-icon: #ffb4ab;
         }
-
         body.theme-naranja {
-            --bg-color: #1f1206;
-            --main-bg: #140b02;
-            --text-color: #ffddb6;
-            --text-muted: #dec2a2;
-            --active-bg: #43290f;
-            --active-icon: #ffb776;
+            --bg-color: #1f1206; --main-bg: #140b02; --text-color: #ffddb6;
+            --text-muted: #dec2a2; --active-bg: #43290f; --active-icon: #ffb776;
         }
-
         body.theme-amarillo {
-            --bg-color: #1c1400;
-            --main-bg: #110d00;
-            --text-color: #f2e2bb;
-            --text-muted: #d5c6a1;
-            --active-bg: #3c2f00;
-            --active-icon: #e5c36c;
+            --bg-color: #1c1400; --main-bg: #110d00; --text-color: #f2e2bb;
+            --text-muted: #d5c6a1; --active-bg: #3c2f00; --active-icon: #e5c36c;
         }
-
         body.theme-verde {
-            --bg-color: #0b150f;
-            --main-bg: #050e0a;
-            --text-color: #e1e3df;
-            --text-muted: #c5c7c3;
-            --active-bg: #1f3729;
-            --active-icon: #6cdb9d;
+            --bg-color: #0b150f; --main-bg: #050e0a; --text-color: #e1e3df;
+            --text-muted: #c5c7c3; --active-bg: #1f3729; --active-icon: #6cdb9d;
         }
-
         body.theme-azul {
-            --bg-color: #0c1520;
-            --main-bg: #050e18;
-            --text-color: #e2e2e9;
-            --text-muted: #c6c6cd;
-            --active-bg: #1d3147;
-            --active-icon: #9ecafe;
+            --bg-color: #0c1520; --main-bg: #050e18; --text-color: #e2e2e9;
+            --text-muted: #c6c6cd; --active-bg: #1d3147; --active-icon: #9ecafe;
         }
-
         body.theme-morado {
-            --bg-color: #17101f;
-            --main-bg: #100a16;
-            --text-color: #f5daff;
-            --text-muted: #d9bedf;
-            --active-bg: #352249;
-            --active-icon: #e8b3ff;
+            --bg-color: #17101f; --main-bg: #100a16; --text-color: #f5daff;
+            --text-muted: #d9bedf; --active-bg: #352249; --active-icon: #e8b3ff;
         }
 
         body {
-            margin: 0;
-            padding: 0;
+            margin: 0; padding: 0;
             background-color: #000;
             font-family: var(--font-family);
             -webkit-font-smoothing: antialiased;
             display: flex;
+            flex-direction: row;
             height: 100vh;
             overflow: hidden;
             transition: background-color 0.3s ease;
         }
 
+        /* BARRA LATERAL (ESCRITORIO) */
         .sidebar {
             width: 320px;
             height: 100vh;
@@ -96,6 +67,7 @@
             position: relative;
             flex-shrink: 0;
             transition: background-color 0.3s ease;
+            overflow-y: auto;
         }
 
         /* CONTENEDOR PRINCIPAL DERECHO */
@@ -114,222 +86,64 @@
             transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        .main-content h1 {
-            margin: 0 0 16px 0;
-            font-size: 36px;
-            font-weight: 600;
-            padding: 0 20px;
-        }
+        .main-content h1 { margin: 0 0 16px 0; font-size: 32px; font-weight: 600; padding: 0 20px; z-index: 2; }
+        .main-content p { color: var(--text-muted); font-size: 16px; margin: 0; max-width: 500px; line-height: 1.5; padding: 0 20px; z-index: 2; }
 
-        .main-content p {
-            color: var(--text-muted);
-            font-size: 18px;
-            margin: 0;
-            max-width: 500px;
-            line-height: 1.5;
-            padding: 0 20px;
-        }
-
-        /* IMAGENES ABSOLUTAS */
+        /* IMÁGENES ABSOLUTAS */
         .jusep-image {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            cursor: pointer;
-            display: none;
+            position: absolute; top: 0; left: 0;
+            width: 100%; height: 100%;
+            object-fit: cover; cursor: pointer;
+            display: none; z-index: 1;
         }
 
         .window-controls {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 24px;
-            padding-left: 8px;
-            padding-right: 4px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 24px; padding-left: 8px; padding-right: 4px;
         }
 
-        .more-container, .profile-container {
-            position: relative;
-        }
+        .more-container, .profile-container { position: relative; }
 
         .btn-profile {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
+            width: 36px; height: 36px; border-radius: 50%;
             background-color: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            padding: 0;
-            overflow: hidden;
-            transition: border-color 0.2s, background-color 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; padding: 0; overflow: hidden;
         }
+        .btn-profile.connected { border-color: #2ea44f; }
+        .btn-profile svg { width: 18px; height: 18px; fill: var(--text-color); }
+        .btn-profile img { width: 100%; height: 100%; object-fit: cover; display: none; }
 
-        .btn-profile:hover {
-            background-color: rgba(255, 255, 255, 0.08);
-            border-color: var(--text-muted);
-        }
-
-        .btn-profile.connected {
-            border-color: #2ea44f;
-        }
-
-        .btn-profile svg {
-            width: 16px;
-            height: 16px;
-            fill: var(--text-color);
-        }
-
-        .btn-profile img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            display: none;
-        }
-
+        /* DROPDOWNS COMUNES */
         .profile-dropdown, .more-dropdown {
-            position: absolute;
-            top: 38px;
-            background-color: rgba(25, 30, 40, 0.95);
-            backdrop-filter: blur(8px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            position: absolute; top: 42px;
+            background-color: rgba(20, 25, 35, 0.98);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.12);
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-            padding: 14px;
-            display: none;
-            z-index: 100;
-            flex-direction: column;
-            gap: 10px;
+            padding: 14px; display: none; z-index: 100;
+            flex-direction: column; gap: 10px;
         }
+        .profile-dropdown { right: 0; width: 210px; }
+        .more-dropdown { left: 0; width: 260px; }
+        .profile-dropdown.show, .more-dropdown.show { display: flex; }
 
-        .profile-dropdown {
-            right: 0;
-            width: 210px;
-        }
+        .dropdown-info { font-size: 13px; color: var(--text-muted); font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .dropdown-divider { height: 1px; background-color: rgba(255, 255, 255, 0.08); margin: 4px 0; }
 
-        .more-dropdown {
-            left: 0;
-            width: 260px;
-        }
+        /* SECCIONES INTERNAS MENU */
+        .redeem-section { display: flex; flex-direction: column; gap: 6px; }
+        .redeem-section label, .themes-section span { font-size: 11px; color: var(--text-muted); font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+        .redeem-input-group { display: flex; gap: 6px; }
+        .redeem-input { background-color: rgba(0, 0, 0, 0.3); border: 1px solid rgba(255, 255, 255, 0.15); border-radius: 6px; color: var(--text-color); padding: 8px; font-size: 13px; flex-grow: 1; outline: none; }
+        .btn-redeem-action { background-color: #2ea44f; color: #fff; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer; }
 
-        .profile-dropdown.show, .more-dropdown.show {
-            display: flex;
-        }
-
-        .dropdown-info {
-            font-size: 13px;
-            color: var(--text-muted);
-            font-weight: 500;
-            padding: 2px 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .dropdown-divider {
-            height: 1px;
-            background-color: rgba(255, 255, 255, 0.08);
-            margin: 4px 0;
-        }
-
-        .redeem-section {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .redeem-section label {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .redeem-input-group {
-            display: flex;
-            gap: 6px;
-        }
-
-        .redeem-input {
-            background-color: rgba(0, 0, 0, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-radius: 6px;
-            color: var(--text-color);
-            padding: 6px 10px;
-            font-size: 13px;
-            flex-grow: 1;
-            outline: none;
-        }
-
-        .redeem-input:focus {
-            border-color: var(--active-icon);
-        }
-
-        .btn-redeem-action {
-            background-color: #2ea44f;
-            color: #fff;
-            border: none;
-            border-radius: 6px;
-            padding: 6px 12px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
-        .btn-redeem-action:hover {
-            background-color: #2c974b;
-        }
-
-        .themes-section {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .themes-section span {
-            font-size: 11px;
-            color: var(--text-muted);
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-        }
-
-        .theme-options {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-        }
-
-        .btn-theme-select {
-            background-color: rgba(255, 255, 255, 0.04);
-            color: var(--text-color);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            border-radius: 8px;
-            padding: 8px 6px;
-            font-size: 12px;
-            cursor: pointer;
-            text-align: center;
-            font-weight: 500;
-            transition: all 0.2s ease;
-        }
-
-        .btn-theme-select:hover {
-            background-color: rgba(255, 255, 255, 0.1);
-            border-color: var(--text-muted);
-        }
-
-        .btn-theme-select.active-theme {
-            border-color: var(--active-icon);
-            background-color: var(--active-bg);
-            font-weight: 600;
-            box-shadow: 0 0 8px rgba(255, 255, 255, 0.05);
-        }
+        .themes-section { display: flex; flex-direction: column; gap: 8px; }
+        .theme-options { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+        .btn-theme-select { background-color: rgba(255, 255, 255, 0.04); color: var(--text-color); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 8px; padding: 8px 4px; font-size: 12px; cursor: pointer; font-weight: 500; }
+        .btn-theme-select.active-theme { border-color: var(--active-icon); background-color: var(--active-bg); font-weight: 600; }
 
         .btn-theme-select[data-theme="rojo"] { border-left: 4px solid #ffb4ab; }
         .btn-theme-select[data-theme="naranja"] { border-left: 4px solid #ffb776; }
@@ -338,92 +152,94 @@
         .btn-theme-select[data-theme="azul"] { border-left: 4px solid #9ecafe; }
         .btn-theme-select[data-theme="morado"] { border-left: 4px solid #e8b3ff; }
 
-        .btn-github-action {
-            background-color: #24292e;
-            color: #ffffff;
-            border: 1px solid #444c56;
-            border-radius: 6px;
-            padding: 8px 12px;
-            font-size: 13px;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            cursor: pointer;
-            width: 100%;
-        }
+        .btn-github-action { background-color: #24292e; color: #ffffff; border: 1px solid #444c56; border-radius: 6px; padding: 8px; font-size: 13px; display: flex; align-items: center; justify-content: center; gap: 8px; cursor: pointer; width: 100%; }
+        .btn-logout-action { background-color: transparent; color: #ff453a; border: none; padding: 6px 4px; font-size: 13px; cursor: pointer; display: none; font-weight: 500; }
 
-        .btn-github-action:hover {
-            background-color: #2f363d;
-        }
-
-        .btn-logout-action {
-            background-color: transparent;
-            color: #ff453a;
-            border: none;
-            padding: 6px 4px;
-            font-size: 13px;
-            cursor: pointer;
-            text-align: left;
-            display: none;
-            font-weight: 500;
-        }
-
-        .btn-logout-action:hover {
-            text-decoration: underline;
-        }
-
-        .btn-more {
-            background-color: var(--active-bg);
-            border: none;
-            border-radius: 8px;
-            width: 54px;
-            height: 32px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
+        .btn-more { background-color: var(--active-bg); border: none; border-radius: 8px; width: 54px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; }
         .btn-more svg { fill: var(--text-color); }
 
+        /* ITEMS DE NAVEGACIÓN */
         .nav-item {
-            display: flex;
-            align-items: center;
-            padding: 10px 12px;
-            border-radius: 10px;
-            color: var(--text-color);
-            text-decoration: none;
-            font-size: 16px;
-            font-weight: 400;
-            gap: 16px;
-            cursor: pointer;
-            transition: background 0.2s, color 0.2s;
+            display: flex; align-items: center; padding: 10px 12px; border-radius: 10px;
+            color: var(--text-color); text-decoration: none; font-size: 15px; gap: 16px; cursor: pointer;
         }
-
         .nav-item:hover { background-color: rgba(255, 255, 255, 0.05); }
-        .nav-item.active { background-color: var(--active-bg); color: var(--text-color); font-weight: 500; }
+        .nav-item.active { background-color: var(--active-bg); font-weight: 500; }
 
-        .nav-icon-square { width: 24px; height: 24px; object-fit: cover; flex-shrink: 0; }
+        .nav-icon-square { width: 24px; height: 24px; object-fit: cover; flex-shrink: 0; border-radius: 4px; }
         .nav-item svg { width: 24px; height: 24px; flex-shrink: 0; }
         .nav-item .icon-blue { color: var(--active-icon); fill: none; stroke: currentColor; stroke-width: 2; }
 
-        .section-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--text-muted);
-            font-size: 14px;
-            font-weight: 500;
-            padding: 16px 12px 6px 12px;
-            margin-top: 10px;
-        }
-
+        .section-header { display: flex; justify-content: space-between; align-items: center; color: var(--text-muted); font-size: 12px; font-weight: 700; text-transform: uppercase; padding: 14px 12px 4px 12px; }
         .section-header svg { width: 14px; height: 14px; fill: currentColor; }
 
         #nav-nuget { display: none; }
+
+        /* =========================================================================
+           MÓVIL / PANTALLAS VERTICALES (MEDIA QUERY)
+           ========================================================================= */
+        @media (max-width: 768px) {
+            body {
+                flex-direction: column-reverse; /* El contenido arriba, el menú abajo */
+            }
+
+            /* Cambiar la barra lateral en una barra inferior horizontal haptica */
+            .sidebar {
+                width: 100%;
+                height: 75px;
+                min-height: 75px;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                padding: 0 10px;
+                gap: 0;
+                overflow-y: hidden;
+                overflow-x: auto;
+                border-top: 1px solid rgba(255, 255, 255, 0.08);
+                z-index: 99;
+            }
+
+            /* Ocultar las cabeceras de sección y textos en los botones en el menú móvil */
+            .sidebar .section-header, 
+            .sidebar .nav-item span {
+                display: none !important;
+            }
+
+            .window-controls {
+                margin-bottom: 0;
+                padding: 0;
+                gap: 8px;
+            }
+
+            /* Adaptar botones para que queden cómodos al dedo */
+            .nav-item {
+                padding: 12px;
+                border-radius: 12px;
+                justify-content: center;
+                flex-grow: 1;
+            }
+
+            .main-content {
+                width: 100%;
+                height: calc(100vh - 75px);
+            }
+
+            .main-content h1 { font-size: 26px; }
+            .main-content p { font-size: 14px; }
+
+            /* Reposicionar los Desplegables en formato "Modales Flotantes Inferiores" */
+            .more-dropdown, .profile-dropdown {
+                position: fixed;
+                bottom: 85px; /* Flotan justo arriba de la barra de navegación */
+                top: auto !important;
+                left: 16px !important;
+                right: 16px !important;
+                width: calc(100% - 32px) !important;
+                box-sizing: border-box;
+                background-color: rgba(15, 20, 30, 0.98);
+                box-shadow: 0 -4px 25px rgba(0,0,0,0.8);
+            }
+        }
     </style>
 </head>
 <body>
@@ -459,9 +275,7 @@
                             <button class="btn-redeem-action" id="redeemBtn">Canjear</button>
                         </div>
                     </div>
-                    
                     <div class="dropdown-divider"></div>
-
                     <div class="themes-section">
                         <span>Cambiar Tema</span>
                         <div class="theme-options">
@@ -478,7 +292,7 @@
             </div>
 
             <div class="profile-container">
-                <button class="btn-profile" id="profileBtn" title="Vincular tu cuenta real de GitHub">
+                <button class="btn-profile" id="profileBtn" title="Vincular cuenta GitHub">
                     <svg id="avatarDefault" viewBox="0 0 16 16">
                         <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                     </svg>
@@ -498,7 +312,7 @@
             </div>
         </div>
 
-        <a class="nav-item active" data-section="inicio">
+        <a class="nav-item active" data-section="inicio" title="Inicio">
             <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
                 <polyline points="9 22 9 12 15 12 15 22"></polyline>
@@ -506,60 +320,51 @@
             <span>Inicio</span>
         </a>
 
-        <a class="nav-item" data-section="jusep">
+        <a class="nav-item" data-section="jusep" title="Jusep">
             <img class="nav-icon-square" src="./Jusep_data/Jusep/icon.png" alt="Jusep">
             <span>Jusep</span>
         </a>
 
-        <a class="nav-item" data-section="jusep-esponja">
+        <a class="nav-item" data-section="jusep-esponja" title="Jusep Esponja">
             <img class="nav-icon-square" src="./Jusep_data/Esponja/icon.png" alt="Jusep Esponja">
             <span>Jusep Esponja</span>
         </a>
 
-        <a class="nav-item" data-section="jusep-estrella">
+        <a class="nav-item" data-section="jusep-estrella" title="Jusep Estrella">
             <img class="nav-icon-square" src="./Jusep_data/Estrella/icon.png" alt="Jusep Estrella">
             <span>Jusep Estrella</span>
         </a>
 
-        <a class="nav-item" data-section="jusep-mango">
+        <a class="nav-item" data-section="jusep-mango" title="Jusep Mango">
             <img class="nav-icon-square" src="./Jusep_data/Mango/mangoicon.png" alt="Jusep Mango">
             <span>Jusep Mango</span>
         </a>
 
-        <a class="nav-item" data-section="jusep-nuget" id="nav-nuget">
+        <a class="nav-item" data-section="jusep-nuget" id="nav-nuget" title="Jusep Nuget">
             <img class="nav-icon-square" src="./Jusep_data/Nuget/nugeticon.png" alt="Jusep Nuget">
             <span>Jusep Nuget</span>
         </a>
 
-        <div class="section-header">
-            <span>Jueguitos - EN DESARROLLO </span>
-            <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-        </div>
+        <div class="section-header"><span>Jueguitos</span></div>
 
-        <a class="nav-item" data-section="jusep-clicker">
+        <a class="nav-item" data-section="jusep-clicker" title="Jusep Clicker">
             <img class="nav-icon-square" src="./Jusep_data/Jusep Clicker/icon.png" alt="Jusep Clicker">
             <span>Jusep Clicker</span>
         </a>
 
-        <a class="nav-item" data-section="jusep-rpg">
+        <a class="nav-item" data-section="jusep-rpg" title="Jusep RPG">
             <img class="nav-icon-square" src="./Jusep_data/Jusep RPG/icon.png" alt="Jusep RPG">
             <span>Jusep RPG</span>
         </a>
 
-        <div class="section-header">
-            <span>Noticias</span>
-            <svg viewBox="0 0 24 24"><path d="M7.41 8.59L12 13.17l4.59-4.58L18 10l-6 6-6-6 1.41-1.41z"/></svg>
-        </div>
+        <div class="section-header"><span>Noticias</span></div>
 
-        <a class="nav-item" data-section="primer-lanzamiento">
-            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <a class="nav-item" data-section="primer-lanzamiento" title="Noticias">
+            <svg class="icon-blue" viewBox="0 0 24 24" fill="none" stroke-width="2">
                 <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                <path d="M16 8h2"></path>
-                <path d="M16 12h2"></path>
-                <path d="M16 16h2"></path>
-                <path d="M6 8h6v8H6z"></path>
+                <path d="M16 8h2M16 12h2M16 16h2M6 8h6v8H6z"></path>
             </svg>
-            <span>Primera BETA de Jusep Verso 2</span>
+            <span>Primera BETA</span>
         </a>
     </div>
 
@@ -577,9 +382,11 @@
     <script>
         const NUGET_PUBLICO = false; 
 
+        // Configuración Supabase
         const SUPABASE_URL = "https://fimkpoqhzwruxhpsavhc.supabase.co"; 
         const SUPABASE_ANON_KEY = "sb_publishable_TTXdlD8qqhYbBtLdSaWxqA_Ca_Uip7u"; 
 
+        // Elementos DOM
         const profileBtn = document.getElementById('profileBtn');
         const profileDropdown = document.getElementById('profileDropdown');
         const loginBtn = document.getElementById('loginBtn');
@@ -621,7 +428,7 @@
         let currentUser = null;
 
         const sectionsData = {
-            "inicio": { title: "Bienvenido a Jusep Verso", desc: "Explora la coleccion de Juseps" },
+            "inicio": { title: "Bienvenido al Jusep Verso", desc: "Selecciona una opción del menú para ver su contenido." },
             "jusep": { title: "", desc: "" },
             "jusep-esponja": { title: "", desc: "" },
             "jusep-estrella": { title: "", desc: "" },
@@ -629,14 +436,11 @@
             "jusep-nuget": { title: "", desc: "" }, 
             "jusep-clicker": { title: "Jusep Clicker 🍪👀", desc: "Muy Pronto, ¿Codigo BAQUE? ... > Canjear codigo" },
             "jusep-rpg": { title: "Jusep RPG 🦴🔵👀", desc: "EN DESAROLLO, POSIBLE LANZAMIENTO 2027" },
-            "primer-lanzamiento": { title: "Cambios de la version 2026.06.16", desc: "Se añadio un nuevo Jusep (JUSEP MANGO), se agrego un sistema de cuentas, tambien se agregaron dos espacios para futuros juegos, temas y codigos BAQUE" }
+            "primer-lanzamiento": { title: "Cambios de la version 2026.06.16", desc: "Se añadio un nuevo Jusep (JUSEP MANGO), sistema de cuentas en la nube, soporte móvil responsivo, temas y códigos BAQUE." }
         };
 
         function verificarVisibilidadNuget() {
-            if (NUGET_PUBLICO) {
-                navNuget.style.display = "flex";
-                return;
-            }
+            if (NUGET_PUBLICO) { navNuget.style.display = "flex"; return; }
             const haSidoDesbloqueado = localStorage.getItem('jusep_nuget_desbloqueado') === 'true';
             if (currentUser && haSidoDesbloqueado) {
                 navNuget.style.display = "flex";
@@ -648,7 +452,7 @@
             }
         }
 
-        // --- REPRODUCCIÓN AUDIO ---
+        // Eventos Clicks interactivos
         jusepImgElement.addEventListener('click', () => { clickSound.currentTime = 0; clickSound.play().catch(e=>0); });
         jusepEsponjaImg.addEventListener('click', () => { clickEsponjaSound.currentTime = 0; clickEsponjaSound.play().catch(e=>0); });
         jusepEstrellaImg.addEventListener('click', () => { clickEstrellaSound.currentTime = 0; clickEstrellaSound.play().catch(e=>0); });
@@ -665,6 +469,7 @@
             bgMusic.pause(); bgEsponjaMusic.pause(); bgEstrellaMusic.pause(); bgMangoMusic.pause(); bgNugetMusic.pause();
         }
 
+        // Navegación fluida
         navItems.forEach(item => {
             item.addEventListener('click', () => {
                 navItems.forEach(nav => nav.classList.remove('active'));
@@ -689,31 +494,32 @@
             });
         });
 
-        // --- MENÚS DROPDOWN ---
+        // Eventos de Menús Desplegables Inteligentes
         profileBtn.addEventListener('click', (e) => { e.stopPropagation(); moreDropdown.classList.remove('show'); profileDropdown.classList.toggle('show'); });
         moreBtn.addEventListener('click', (e) => { e.stopPropagation(); profileDropdown.classList.remove('show'); moreDropdown.classList.toggle('show'); });
         document.addEventListener('click', () => { profileDropdown.classList.remove('show'); moreDropdown.classList.remove('show'); });
         profileDropdown.addEventListener('click', (e) => e.stopPropagation());
         moreDropdown.addEventListener('click', (e) => e.stopPropagation());
 
-        // --- SUPABASE CLIENT ---
+        // Inicializar Supabase
         let _supabase = null;
         try { if (SUPABASE_URL && SUPABASE_ANON_KEY) _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY); } catch (err) { console.error(err); }
 
         loginBtn.addEventListener('click', async () => {
-            if (!_supabase) { alert("Configura tus claves válidas de Supabase."); return; }
+            if (!_supabase) { alert("Configura tus claves de Supabase."); return; }
             dropdownStatus.innerText = "Abriendo GitHub...";
             await _supabase.auth.signInWithOAuth({ provider: 'github', options: { redirectTo: window.location.href } });
         });
 
         logoutBtn.addEventListener('click', async () => { if (_supabase) await _supabase.auth.signOut(); updateUI(null); });
 
+        // Canjeo de Códigos
         redeemBtn.addEventListener('click', async () => {
             const code = giftCodeInput.value.trim();
-            if (!code) { alert("Por favor, escribe un código."); return; }
+            if (!code) { alert("Escribe un código."); return; }
 
             if (code === "NugetBAQUE?") {
-                if (!currentUser) { alert("¡Error! Debes conectar tu cuenta primero para poder canjear códigos especiales."); return; }
+                if (!currentUser) { alert("¡Error! Debes conectar tu cuenta primero."); return; }
                 localStorage.setItem('jusep_nuget_desbloqueado', 'true');
                 verificarVisibilidadNuget();
                 alert("¡Felicidades! Has desbloqueado permanentemente a Jusep Nuget 👀🍗");
@@ -721,22 +527,19 @@
                 return;
             }
             if (!currentUser) { alert("¡Conecta tu cuenta primero!"); return; }
-            alert(`Código enviado: "${code}"`);
+            alert(`Código enviado a revisión: "${code}"`);
             giftCodeInput.value = "";
         });
 
-        // --- LÓGICA DE TEMAS VISUALES ---
+        // Cambiar Temas
         function setTemaVisual(themeName) {
             document.body.className = '';
             themeButtons.forEach(b => b.classList.remove('active-theme'));
-            if (themeName !== 'defecto') {
-                document.body.classList.add(`theme-${themeName}`);
-            }
+            if (themeName !== 'defecto') document.body.classList.add(`theme-${themeName}`);
             const activeBtn = document.querySelector(`.btn-theme-select[data-theme="${themeName}"]`);
             if (activeBtn) activeBtn.classList.add('active-theme');
         }
 
-        // --- CAMBIAR Y GUARDAR TEMA EN LA CUENTA VINCULADA ---
         themeButtons.forEach(btn => {
             btn.addEventListener('click', async () => {
                 const selectedTheme = btn.getAttribute('data-theme');
@@ -746,46 +549,19 @@
                     localStorage.setItem('jusep_local_theme', selectedTheme);
                     return;
                 }
-
                 if (!_supabase) return;
-
-                // Guardado real en Supabase mediante upsert
-                const { error } = await _supabase
-                    .from('user_preferences')
-                    .upsert({ user_id: currentUser.id, theme: selectedTheme }, { onConflict: 'user_id' });
-
-                if (error) {
-                    console.error("Error guardando el tema en la nube:", error.message);
-                } else {
-                    console.log(`Tema "${selectedTheme}" guardado en tu cuenta vinculada.`);
-                }
+                await _supabase.from('user_preferences').upsert({ user_id: currentUser.id, theme: selectedTheme }, { onConflict: 'user_id' });
             });
         });
 
-        // --- CARGAR TEMA DESDE LA CUENTA VINCULADA ---
         async function cargarTemaGuardado(userId) {
             if (!_supabase) return;
-
-            const { data, error } = await _supabase
-                .from('user_preferences')
-                .select('theme')
-                .eq('user_id', userId)
-                .single();
-
-            if (error && error.code !== 'PGRST116') { // Ignorar error de fila no encontrada
-                console.error("Error cargando tema de la nube:", error.message);
-                return;
-            }
-
-            if (data && data.theme) {
-                setTemaVisual(data.theme);
-            } else {
-                // Si está conectado pero no tiene fila guardada, aplicar el predeterminado o local
-                const localTheme = localStorage.getItem('jusep_local_theme') || 'defecto';
-                setTemaVisual(localTheme);
-            }
+            const { data, error } = await _supabase.from('user_preferences').select('theme').eq('user_id', userId).single();
+            if (data && data.theme) setTemaVisual(data.theme);
+            else setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
         }
 
+        // Actualizar Interfaz según Usuario (Conectado / Desconectado)
         function updateUI(user) {
             currentUser = user;
             verificarVisibilidadNuget();
@@ -794,28 +570,17 @@
                 const avatarUrl = user.user_metadata.avatar_url;
                 const name = user.user_metadata.full_name || user.user_metadata.user_name;
 
-                avatarImage.src = avatarUrl;
-                avatarImage.style.display = 'block';
-                avatarDefault.style.display = 'none';
+                avatarImage.src = avatarUrl; avatarImage.style.display = 'block'; avatarDefault.style.display = 'none';
                 profileBtn.classList.add('connected');
-                dropdownStatus.innerText = `Conectado: ${name}`;
-                loginBtn.style.display = 'none';
-                logoutBtn.style.display = 'block';
-
-                // Llamar a la carga remota al iniciar sesión
+                dropdownStatus.innerText = `${name}`;
+                loginBtn.style.display = 'none'; logoutBtn.style.display = 'block';
                 cargarTemaGuardado(user.id);
             } else {
-                avatarImage.src = '';
-                avatarImage.style.display = 'none';
-                avatarDefault.style.display = 'block';
+                avatarImage.src = ''; avatarImage.style.display = 'none'; avatarDefault.style.display = 'block';
                 profileBtn.classList.remove('connected');
                 dropdownStatus.innerText = "Cuenta no conectada";
-                loginBtn.style.display = 'flex';
-                logoutBtn.style.display = 'none';
-
-                // Restaurar de manera local
-                const localTheme = localStorage.getItem('jusep_local_theme') || 'defecto';
-                setTemaVisual(localTheme);
+                loginBtn.style.display = 'flex'; logoutBtn.style.display = 'none';
+                setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
             }
         }
 
@@ -825,8 +590,7 @@
                 else updateUI(null);
             });
         } else {
-            const localTheme = localStorage.getItem('jusep_local_theme') || 'defecto';
-            setTemaVisual(localTheme);
+            setTemaVisual(localStorage.getItem('jusep_local_theme') || 'defecto');
             verificarVisibilidadNuget();
         }
     </script>
