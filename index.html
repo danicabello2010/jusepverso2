@@ -662,12 +662,25 @@
         async function cargarProgresoDeCuenta(userId) {
             if (!_supabase) return;
             const { data } = await _supabase.from('user_preferences').select('cookies_count, total_clicks, assets_json').eq('user_id', userId).single();
+            
+            // Leemos los valores del LocalStorage como plan de respaldo para no perder el progreso actual
+            const localCookies = parseFloat(localStorage.getItem('jusep_local_cookies')) || 0;
+            const localClicks = parseInt(localStorage.getItem('jusep_local_clicks_historicos')) || 0;
+
             if (data) {
-                cookies = data.cookies_count || 0; totalClicksHistoricos = data.total_clicks || 0;
-                if (data.assets_json) assets = JSON.parse(data.assets_json);
+                // Comparamos y nos quedamos SIEMPRE con el valor más alto para evitar reinicios a 0 involuntarios
+                cookies = Math.max(data.cookies_count || 0, localCookies);
+                totalClicksHistoricos = Math.max(data.total_clicks || 0, localClicks);
+                
+                if (data.assets_json) {
+                    assets = JSON.parse(data.assets_json);
+                } else {
+                    const localAssets = localStorage.getItem('jusep_local_assets');
+                    if (localAssets) assets = JSON.parse(localAssets);
+                }
             } else {
-                cookies = parseFloat(localStorage.getItem('jusep_local_cookies')) || 0;
-                totalClicksHistoricos = parseInt(localStorage.getItem('jusep_local_clicks_historicos')) || 0;
+                cookies = localCookies;
+                totalClicksHistoricos = localClicks;
                 const localAssets = localStorage.getItem('jusep_local_assets');
                 if (localAssets) assets = JSON.parse(localAssets);
             }
@@ -819,6 +832,14 @@
                 localStorage.setItem('jusep_nuget_desbloqueado', 'true');
                 verificarDesbloqueosYVisibilidad();
                 alert("¡Felicidades! Has desbloqueado permanentemente a Jusep Nuget 👀🍗");
+                giftCodeInput.value = "";
+                guardarProgresoEnCuenta();
+            } else if (code === "MILLONBAQUE") {
+                cookies += 1000000;
+                totalClicksHistoricos += 1000000;
+                verificarDesbloqueosYVisibilidad();
+                updateClickerUI();
+                alert("¡Código brutal canjeado! Has recibido 1,000,000 de clicks y cookies 🏆");
                 giftCodeInput.value = "";
                 guardarProgresoEnCuenta();
             }
